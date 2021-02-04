@@ -23,9 +23,11 @@ import com.vjezba.data.repository.MoviesRepositoryImpl
 import com.vjezba.domain.repository.MoviesRepository
 import dagger.Module
 import dagger.Provides
-
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 
 @Module
+@InstallIn(ActivityComponent::class)
 class RepositoryModule {
 
     @Provides

@@ -25,6 +25,9 @@ import com.vjezba.data.networking.ConnectivityUtil
 import com.vjezba.data.networking.MovieRepositoryApi
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.components.ApplicationComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -37,7 +40,8 @@ import javax.inject.Singleton
 private const val RETROFIT_BASE_URL = "https://api.themoviedb.org/3/"
 
 @Module
-class NetworkModule {
+@InstallIn(ApplicationComponent::class)
+class NetworkModuleHilt {
 
 
     @Provides

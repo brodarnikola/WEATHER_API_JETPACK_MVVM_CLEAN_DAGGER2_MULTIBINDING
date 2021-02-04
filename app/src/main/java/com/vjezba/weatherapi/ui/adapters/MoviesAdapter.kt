@@ -116,10 +116,8 @@ class MoviesAdapter(
         isLoaderVisible = false
         val position: Int = movieResultList.size - 1
         val item = movieResultList[position]
-        if (item != null) {
-            movieResultList.removeAt(position)
-            notifyItemRemoved(position)
-        }
+        movieResultList.removeAt(position)
+        notifyItemRemoved(position)
     }
 
     fun updateDevices(updatedDevices: MutableList<MovieResult>) {

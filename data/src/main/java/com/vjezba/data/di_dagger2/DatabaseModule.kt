@@ -21,12 +21,15 @@ import com.vjezba.data.database.MoviesDatabase
 import com.vjezba.data.database.dao.MoviesDao
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
 import javax.inject.Singleton
 
+@InstallIn(ApplicationComponent::class)
 @Module
 class DatabaseModule {
 
-   @Singleton
+    @Singleton
     @Provides
     fun provideAppDatabase( app: Application) = MoviesDatabase.create(app)
 
