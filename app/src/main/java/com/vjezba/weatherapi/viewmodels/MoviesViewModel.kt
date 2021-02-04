@@ -47,7 +47,7 @@ class MoviesViewModel @ViewModelInject constructor(
     private val compositeDisposable = CompositeDisposable()
 
     private val _moviesMutableLiveData = MutableLiveData<Movies>().apply {
-        value = Movies( 0, listOf(), 0, 0L )
+        value = Movies(0, listOf(), 0, 0L)
     }
 
     val moviesList: LiveData<Movies> = _moviesMutableLiveData
@@ -55,13 +55,12 @@ class MoviesViewModel @ViewModelInject constructor(
     fun getMoviesFromServer(page: Int) {
         if (connectivityUtil.isConnectedToInternet()) {
             getMoviesFromNetwork(page)
-        }
-        else {
+        } else {
 
             Observable.fromCallable {
                 val listDBMovies = getMoviesFromDb()
 
-                Movies(0 , listDBMovies,0,0L)
+                Movies(0, listDBMovies, 0, 0L)
             }
                 .subscribeOn(Schedulers.io())
                 //.flatMap { source: List<Articles> -> Observable.fromIterable(source) } // this flatMap is good if you want to iterate, go through list of objects.
@@ -69,7 +68,7 @@ class MoviesViewModel @ViewModelInject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { data: Movies? ->
 
-                    _moviesMutableLiveData.value?.let { data ->
+                    _moviesMutableLiveData.value?.let { _ ->
                         _moviesMutableLiveData.value = data
                     }
                 }
@@ -91,7 +90,8 @@ class MoviesViewModel @ViewModelInject constructor(
 
                     insertMoviesIntoDB(response)
 
-                    _moviesMutableLiveData.value?.let { _moviesMutableLiveData.value = response
+                    _moviesMutableLiveData.value?.let {
+                        _moviesMutableLiveData.value = response
                     }
                 }
 
@@ -110,7 +110,7 @@ class MoviesViewModel @ViewModelInject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        if( !compositeDisposable.isDisposed )
+        if (!compositeDisposable.isDisposed)
             compositeDisposable.dispose()
     }
 
@@ -127,21 +127,21 @@ class MoviesViewModel @ViewModelInject constructor(
 
         Observable.fromCallable {
 
-            if( movies != null ) {
-                dbMovies.moviesDAO().updateMovies(
-                    dbMapper?.mapDomainMoviesToDbMovies(movies) ?: listOf()
-                )
-                Log.d(
-                    "da li ce uci unutra * ",
-                    "da li ce uci unutra, spremiti podatke u bazu podataka: " + toString()
-                )
-            }
-
+            dbMovies.moviesDAO().updateMovies(
+                dbMapper?.mapDomainMoviesToDbMovies(movies) ?: listOf()
+            )
+            Log.d(
+                "da li ce uci unutra * ",
+                "da li ce uci unutra, spremiti podatke u bazu podataka: " + toString()
+            )
         }
             .doOnError { Log.e("Error in observables", "Error is: ${it.message}, ${throw it}") }
             .subscribeOn(Schedulers.io())
             .subscribe {
-                Log.d( "Hoce spremiti vijesti","Inserted ${  movies.result.size} movies from API in DB...")
+                Log.d(
+                    "Hoce spremiti vijesti",
+                    "Inserted ${movies.result.size} movies from API in DB..."
+                )
             }
     }
 

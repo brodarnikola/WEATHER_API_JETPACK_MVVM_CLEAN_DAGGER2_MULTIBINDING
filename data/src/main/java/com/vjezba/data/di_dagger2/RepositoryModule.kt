@@ -16,8 +16,11 @@
 
 package com.vjezba.data.di
 
+import com.vjezba.data.database.MoviesDatabase
 import com.vjezba.data.database.mapper.DbMapper
-import com.vjezba.data.database.mapper.DbMapperImpl
+import com.vjezba.data.networking.MovieRepositoryApi
+import com.vjezba.data.repository.MoviesRepositoryImpl
+import com.vjezba.domain.repository.MoviesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,11 +28,10 @@ import dagger.hilt.android.components.ActivityComponent
 
 @Module
 @InstallIn(ActivityComponent::class)
-class MapperModuleHilt {
+class RepositoryModule {
 
     @Provides
-    fun provideMapper( ) : DbMapper {
-        return DbMapperImpl()
+    fun provideAllNewsFromRestApiNetworkOrFromRoom(moviesDatabase: MoviesDatabase, movieRepositoryApi: MovieRepositoryApi, dbMapper : DbMapper) : MoviesRepository {
+        return MoviesRepositoryImpl(moviesDatabase, movieRepositoryApi, dbMapper)
     }
-
 }

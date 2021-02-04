@@ -58,7 +58,7 @@ class MovieDetailsViewModel @ViewModelInject constructor(
                 override fun onNext(response: MovieDetails) {
                     Log.d(ContentValues.TAG, "Da li ce uci sim EEEE: ${response}")
 
-                    _newsDetailsMutableLiveData.value?.let { news ->
+                    _newsDetailsMutableLiveData.value?.let { _ ->
                         _newsDetailsMutableLiveData.value = response
 
                         Log.d(ContentValues.TAG, "Da li ce uci sim FFFFFF: ${_newsDetailsMutableLiveData.value!!}")

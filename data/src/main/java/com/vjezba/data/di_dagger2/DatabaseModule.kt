@@ -27,7 +27,7 @@ import javax.inject.Singleton
 
 @InstallIn(ApplicationComponent::class)
 @Module
-class DatabaseModuleHilt {
+class DatabaseModule {
 
     @Singleton
     @Provides
