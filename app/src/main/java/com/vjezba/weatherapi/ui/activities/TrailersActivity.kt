@@ -1,39 +1,26 @@
 package com.vjezba.weatherapi.ui.activities
 
-import android.app.Activity
 import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.vjezba.domain.model.TrailerResult
 import com.vjezba.weatherapi.R
-import com.vjezba.weatherapi.di.ViewModelFactory
-import com.vjezba.weatherapi.di.injectViewModel
 import com.vjezba.weatherapi.ui.adapters.TrailersAdapter
 import com.vjezba.weatherapi.viewmodels.TrailersViewModel
-import com.vjezba.domain.model.TrailerResult
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
 import kotlinx.android.synthetic.main.activity_trailers.*
-import kotlinx.android.synthetic.main.activity_trailers.toolbar
-import javax.inject.Inject
 
 
-class TrailersActivity : BaseActivity(R.id.no_internet_layout), HasActivityInjector {
+class TrailersActivity : BaseActivity(R.id.no_internet_layout) {
 
     var movieId = 0L
 
-    @Inject
-    lateinit var dispatchingAndroidActivityInjector: DispatchingAndroidInjector<Activity>
-
-    override fun activityInjector() = dispatchingAndroidActivityInjector
-
-
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    lateinit var trailerViewModel: TrailersViewModel
+    val trailerViewModel: TrailersViewModel by viewModels()
 
     private lateinit var trailerAdapter: TrailersAdapter
     val trailerLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -41,8 +28,6 @@ class TrailersActivity : BaseActivity(R.id.no_internet_layout), HasActivityInjec
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trailers)
-
-        trailerViewModel = injectViewModel(viewModelFactory)
 
         this.setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

@@ -18,6 +18,7 @@ package com.vjezba.weatherapi.viewmodels
 
 import android.content.ContentValues
 import android.util.Log
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,7 +32,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-class MovieDetailsViewModel @Inject constructor(
+class MovieDetailsViewModel @ViewModelInject constructor(
     val movieRepository: MoviesRepository
 ) : ViewModel() {
 

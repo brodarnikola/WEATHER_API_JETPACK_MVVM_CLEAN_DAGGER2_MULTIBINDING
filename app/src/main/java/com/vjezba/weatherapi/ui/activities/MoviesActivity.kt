@@ -1,38 +1,27 @@
 package com.vjezba.weatherapi.ui.activities
 
-import android.app.Activity
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vjezba.weatherapi.R
 import com.vjezba.weatherapi.customcontrol.RecyclerViewPaginationListener
-import com.vjezba.weatherapi.di.ViewModelFactory
-import com.vjezba.weatherapi.di.injectViewModel
 import com.vjezba.weatherapi.ui.adapters.MoviesAdapter
 import com.vjezba.weatherapi.viewmodels.MoviesViewModel
 import com.vjezba.domain.model.MovieResult
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
 import kotlinx.android.synthetic.main.activity_movie.*
-import javax.inject.Inject
 
 
-const val pageSize: Int = 20
 
-class MoviesActivity : BaseActivity(R.id.no_internet_layout), HasActivityInjector {
 
-    @Inject
-    lateinit var dispatchingAndroidActivityInjector: DispatchingAndroidInjector<Activity>
+class MoviesActivity : BaseActivity(R.id.no_internet_layout) {
 
-    override fun activityInjector() = dispatchingAndroidActivityInjector
-
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    lateinit var moviesViewModel: MoviesViewModel
+    val moviesViewModel: MoviesViewModel by viewModels()
 
     private lateinit var moviesAdapter: MoviesAdapter
     val moviesLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -44,8 +33,6 @@ class MoviesActivity : BaseActivity(R.id.no_internet_layout), HasActivityInjecto
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_movie)
-
-        moviesViewModel = injectViewModel(viewModelFactory)
     }
 
     override fun onNetworkStateUpdated(available: Boolean) {

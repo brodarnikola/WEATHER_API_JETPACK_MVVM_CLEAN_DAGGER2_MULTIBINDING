@@ -1,38 +1,26 @@
 package com.vjezba.weatherapi.ui.activities
 
-import android.app.Activity
 import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.vjezba.domain.model.ActorsResult
 import com.vjezba.weatherapi.R
-import com.vjezba.weatherapi.di.ViewModelFactory
-import com.vjezba.weatherapi.di.injectViewModel
 import com.vjezba.weatherapi.ui.adapters.ActorsAdapter
 import com.vjezba.weatherapi.viewmodels.ActorsViewModel
-import com.vjezba.domain.model.ActorsResult
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
 import kotlinx.android.synthetic.main.activity_actors.*
-import javax.inject.Inject
 
 
-class ActorsActivity : BaseActivity(R.id.no_internet_layout), HasActivityInjector {
+class ActorsActivity : BaseActivity(R.id.no_internet_layout) {
 
     var movieId = 0L
 
-    @Inject
-    lateinit var dispatchingAndroidActivityInjector: DispatchingAndroidInjector<Activity>
-
-    override fun activityInjector() = dispatchingAndroidActivityInjector
-
-
-    @Inject lateinit var viewModelFactory: ViewModelFactory
-    lateinit var actorsViewModel: ActorsViewModel
+    val actorsViewModel: ActorsViewModel by viewModels()
 
     private lateinit var actorsAdapter: ActorsAdapter
     val trailerLayoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
@@ -40,8 +28,6 @@ class ActorsActivity : BaseActivity(R.id.no_internet_layout), HasActivityInjecto
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_actors)
-
-        actorsViewModel = injectViewModel(viewModelFactory)
 
         this.setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
