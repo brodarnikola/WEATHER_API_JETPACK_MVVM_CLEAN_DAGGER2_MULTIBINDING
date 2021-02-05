@@ -27,14 +27,17 @@ import retrofit2.http.Query
 
 interface WeatherRepositoryApi {
 
-    // weather api key ->   b389e4ccf5ae4bbc8072ccd05c8f85c7
+    // forecast api key ->   b389e4ccf5ae4bbc8072ccd05c8f85c7
+
+
+    @GET("weather")
+    @Headers("Content-Type: application/json")
+    fun getWeather( @Query("lat") latitude: Double, @Query("lon") longitude: Double, @Query("appId") appId: String ): Flowable<ApiWeather>
 
 
     @GET("forecast")
     @Headers("Content-Type: application/json")
-    fun getForecast( @Query("q") cityName: String, @Query("appId") appId: String ): Flowable<ApiWeather>
-
-
+    fun getForecast( @Query("q") cityName: String, @Query("appId") appId: String ): Flowable<ApiForecast>
 
 
 

@@ -3,18 +3,15 @@ package com.vjezba.weatherapi.ui.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.vjezba.weatherapi.R
-import com.vjezba.domain.model.WeatherData
+import com.vjezba.domain.model.ForecastData
 import kotlinx.android.synthetic.main.weather_list.view.*
 
 class WeatherAdapter(
-    var weatherResultList: MutableList<WeatherData>,
+    var forecastResultList: MutableList<ForecastData>,
     val weatherResultClickListener: (Long) -> Unit
 ) : RecyclerView.Adapter<WeatherAdapter.ViewHolder>() {
 
@@ -32,7 +29,7 @@ class WeatherAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return if (isLoaderVisible) {
-            if (position == weatherResultList.size - 1) ITEM_TYPES.VIEW_TYPE_LOADING.typeValue else ITEM_TYPES.VIEW_TYPE_NORMAL.typeValue
+            if (position == forecastResultList.size - 1) ITEM_TYPES.VIEW_TYPE_LOADING.typeValue else ITEM_TYPES.VIEW_TYPE_NORMAL.typeValue
         } else {
             ITEM_TYPES.VIEW_TYPE_NORMAL.typeValue
         }
@@ -41,8 +38,8 @@ class WeatherAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         holder as WeatherViewHolder
-        holder.bindItem( holder, weatherResultList[position] )
-//        val viewType = weatherResultList[position]
+        holder.bindItem( holder, forecastResultList[position] )
+//        val viewType = forecastResultList[position]
 //        when (viewType.showProgressBar) {
 //            true -> {
 //                holder as ProgressHolder
@@ -50,7 +47,7 @@ class WeatherAdapter(
 //            else -> {
 //
 //                holder as WeatherViewHolder
-//                holder.bindItem( holder, weatherResultList[position] )
+//                holder.bindItem( holder, forecastResultList[position] )
 //            }
 //        }
     }
@@ -85,7 +82,7 @@ class WeatherAdapter(
         val tvDescription: TextView = itemView.tvDescription
         val tvDate: TextView = itemView.tvDate
 
-        fun bindItem(holder: ViewHolder, item: WeatherData) {
+        fun bindItem(holder: ViewHolder, item: ForecastData) {
 
 //            Glide.with(holder.itemView)
 //                .load("https://image.tmdb.org/t/p/w500/")
@@ -98,9 +95,9 @@ class WeatherAdapter(
             tvMax.text = "Temp max: " + item.main.tempMax
             tvFeelsLike.text = "Feels like: " + item.main.feelsLike
             tvWind.text = "Wind Speed: " + item.wind.speed
-            if( item.weather.isNotEmpty() ) {
+            if( item.forecast.isNotEmpty() ) {
                 tvDescription.visibility = View.VISIBLE
-                tvDescription.text = "Description: " + item.weather[0].description
+                tvDescription.text = "Description: " + item.forecast[0].description
             }
             else
                 tvDescription.visibility = View.GONE
@@ -113,29 +110,29 @@ class WeatherAdapter(
     }
 
     override fun getItemCount(): Int {
-        return weatherResultList.size
+        return forecastResultList.size
     }
 
 
     fun addLoading() {
 //        isLoaderVisible = true
-//        val deliverParcel = WeatherData()
+//        val deliverParcel = ForecastData()
 //        deliverParcel.showProgressBar = true
-//        weatherResultList.add(deliverParcel)
-//        notifyItemInserted(weatherResultList.size - 1)
+//        forecastResultList.add(deliverParcel)
+//        notifyItemInserted(forecastResultList.size - 1)
     }
 
     fun removeLoading() {
 //        isLoaderVisible = false
-//        val position: Int = weatherResultList.size - 1
-//        val item = weatherResultList[position]
-//        weatherResultList.removeAt(position)
+//        val position: Int = forecastResultList.size - 1
+//        val item = forecastResultList[position]
+//        forecastResultList.removeAt(position)
 //        notifyItemRemoved(position)
     }
 
-    fun updateDevices(updatedDevices: MutableList<WeatherData>) {
-        weatherResultList.addAll(updatedDevices)
-        notifyItemRangeInserted(weatherResultList.size, updatedDevices.size)
+    fun updateDevices(updatedDevices: MutableList<ForecastData>) {
+        forecastResultList.addAll(updatedDevices)
+        notifyItemRangeInserted(forecastResultList.size, updatedDevices.size)
     }
 
 

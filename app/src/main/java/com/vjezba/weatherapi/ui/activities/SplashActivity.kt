@@ -5,7 +5,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.app.AppComponentFactory
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.vjezba.weatherapi.R
@@ -18,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class SplashActivity : BaseActivity(R.id.no_internet_layout) {
+class SplashActivity : AppCompatActivity() {
 
 
     private val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -33,7 +35,6 @@ class SplashActivity : BaseActivity(R.id.no_internet_layout) {
 
     override fun onStart() {
         super.onStart()
-        viewLoaded = true
 
         lifecycleScope.launch(Dispatchers.IO) {
             delay(SPLASH_DISPLAY_LENGTH)

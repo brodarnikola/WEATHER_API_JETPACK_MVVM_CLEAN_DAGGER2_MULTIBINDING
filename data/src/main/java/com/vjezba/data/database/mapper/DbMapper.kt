@@ -7,12 +7,14 @@ import com.vjezba.domain.model.*
 
 interface DbMapper {
 
-    // weather
-    fun mapApiWeatherToDomainWeather(apiWeather: ApiWeather): Weather
+    // forecast
+    fun mapApiWeatherToDomainWeather(apiForecast: ApiWeather): Weather
 
-    fun mapDomainWeatherToDbWeather(weather: Weather): List<DBWeather>
+    fun mapApiForecastToDomainForecast(apiForecast: ApiForecast): Forecast
 
-    fun mapDBWeatherListToWeather(weather: DBWeather): WeatherData
+    fun mapDomainWeatherToDbWeather(forecast: Forecast): List<DBWeather>
+
+    fun mapDBWeatherListToWeather(weather: DBWeather): ForecastData
 
 
     // movie

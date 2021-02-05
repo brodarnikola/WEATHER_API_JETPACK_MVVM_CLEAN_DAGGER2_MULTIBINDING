@@ -37,18 +37,32 @@ import com.vjezba.domain.model.*
 class DbMapperImpl : DbMapper {
 
 
+
     override fun mapApiWeatherToDomainWeather(apiWeather: ApiWeather): Weather {
         return with(apiWeather) {
             Weather(
+                weather.map {
+                    WeatherData( it.description )
+                },
+                WeatherMain( main.temp, main.feelsLike, main.tempMax, main.tempMin, main.humidity ),
+                WeatherWind( wind.speed ),
+                name
+            )
+        }
+    }
+
+    override fun mapApiForecastToDomainForecast(apiForecast: ApiForecast): Forecast {
+        return with(apiForecast) {
+            Forecast(
                 code,
-                weatherList.map {
+                forecastList.map {
                     with(it) {
-                        WeatherData(
-                            WeatherMain(it.main.temp, it.main.feelsLike, it.main.tempMax),
-                            it.weather.map {
-                                WeatherDescription(it.description)
+                        ForecastData(
+                            ForecastMain(it.main.temp, it.main.feelsLike, it.main.tempMax),
+                            it.forecast.map {
+                                ForecastDescription(it.description)
                             },
-                            WeatherWind(it.wind.speed),
+                            ForecastWind(it.wind.speed),
                             dateAndTime
                         )
                     }
@@ -58,25 +72,25 @@ class DbMapperImpl : DbMapper {
         }
     }
 
-    override fun mapDomainWeatherToDbWeather(weather: Weather): List<DBWeather> {
-        return weather.weatherList.map {
+    override fun mapDomainWeatherToDbWeather(forecast: Forecast): List<DBWeather> {
+        return forecast.forecastList.map {
             DBWeather(
                 it.main.temp,
                 it.main.feelsLike,
                 it.main.tempMax,
-                it.weather[0].description,
+                it.forecast[0].description,
                 it.wind.speed,
                 it.dateAndTime
             )
         }
     }
 
-    override fun mapDBWeatherListToWeather(weather: DBWeather): WeatherData {
+    override fun mapDBWeatherListToWeather(weather: DBWeather): ForecastData {
         return with(weather) {
-            WeatherData(
-                WeatherMain( weather.temp, weather.feelsLike, weather.tempMax ),
-                listOf(WeatherDescription( weather.description )),
-                WeatherWind(weather.speed),
+            ForecastData(
+                ForecastMain( weather.temp, weather.feelsLike, weather.tempMax ),
+                listOf(ForecastDescription( weather.description )),
+                ForecastWind(weather.speed),
                 dateAndTime
             )
         }
@@ -129,7 +143,7 @@ class DbMapperImpl : DbMapper {
     }
 
     override fun mapDBMoviesListToMovies(weatherList: DBWeather): MovieResult {
-//        return with(weatherList) {
+//        return with(forecastList) {
 //            MovieResult(
 //                id = id,
 //                backdropPath = backdropPath,

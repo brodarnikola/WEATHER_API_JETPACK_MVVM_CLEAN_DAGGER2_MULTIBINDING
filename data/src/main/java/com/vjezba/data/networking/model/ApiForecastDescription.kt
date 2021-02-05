@@ -1,6 +1,6 @@
 package com.vjezba.data.networking.model
 
 
-data class ApiWeatherDescription(
+data class ApiForecastDescription(
     val description: String = ""
 )

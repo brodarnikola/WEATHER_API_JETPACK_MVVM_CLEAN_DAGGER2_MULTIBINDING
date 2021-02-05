@@ -3,7 +3,7 @@ package com.vjezba.domain.model
 
 import com.google.gson.annotations.SerializedName
 
-data class WeatherMain(
+data class ForecastMain(
 
     val temp: String = "",
 
@@ -11,10 +11,5 @@ data class WeatherMain(
     val feelsLike: String = "",
 
     @SerializedName("temp_max")
-    val tempMax: String = "",
-
-    @SerializedName("temp_min")
-    val tempMin: String = "",
-
-    val humidity: Double = 0.0
+    val tempMax: String = ""
 )

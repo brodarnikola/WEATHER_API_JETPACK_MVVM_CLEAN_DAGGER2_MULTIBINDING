@@ -1,6 +1,6 @@
 package com.vjezba.domain.model
 
 
-data class WeatherDescription(
+data class ForecastDescription(
     val description: String = ""
 )

@@ -34,10 +34,10 @@ class WeatherRepositoryImpl constructor(
     private val dbMapper: DbMapper?
 ) : WeatherRepository {
 
-    override fun getWeatherData(cityName: String): Flowable<Weather> {
+    override fun getWeatherData(latitude: Double, longitude: Double): Flowable<Weather> {
 
         val appId = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
-        val result = service.getForecast("Zagreb", appId)
+        val result = service.getWeather(latitude, longitude, appId)
 
         Log.i("Da li ce uci", "AAAA Hoce li svakih 10 sekundi skinuti nove podatke")
         //Observable.concatArrayEager(newsResult, observableFromDB)
@@ -47,7 +47,19 @@ class WeatherRepositoryImpl constructor(
         return correctResult
     }
 
-//    override fun getLastLocationListener(cityName: String): Flowable<Weather> {
+    override fun getForecastData(cityName: String): Flowable<Forecast> {
+        val appId = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
+        val result = service.getForecast(cityName, appId)
+
+        Log.i("Da li ce uci", "AAAA Hoce li svakih 10 sekundi skinuti nove podatke")
+        //Observable.concatArrayEager(newsResult, observableFromDB)
+
+        val correctResult = result.map { dbMapper?.mapApiForecastToDomainForecast(it)!! }
+
+        return correctResult
+    }
+
+//    override fun getLastLocationListener(cityName: String): Flowable<Forecast> {
 //
 //    }
 

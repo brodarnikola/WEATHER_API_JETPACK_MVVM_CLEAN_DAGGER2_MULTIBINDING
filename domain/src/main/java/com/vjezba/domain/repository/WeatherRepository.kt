@@ -22,9 +22,10 @@ import io.reactivex.Flowable
 
 interface WeatherRepository {
 
-    fun getWeatherData(cityName: String) : Flowable<Weather>
+    fun getWeatherData(latitude: Double, longitude: Double) : Flowable<Weather>
 
-    //fun getLastLocationListener(cityName: String) : Flowable<Weather>
+    fun getForecastData(cityName: String) : Flowable<Forecast>
+    //fun getLastLocationListener(cityName: String) : Flowable<Forecast>
 
 
     fun getMovies(page: Int) : Flowable<Movies>
