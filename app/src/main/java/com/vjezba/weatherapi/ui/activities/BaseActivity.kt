@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.vjezba.data.networking.ConnectivityUtil
 import com.vjezba.weatherapi.App
 import com.vjezba.weatherapi.network.ConnectivityChangedEvent
+import com.vjezba.weatherapi.network.ConnectivityMonitor
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.greenrobot.eventbus.Subscribe
@@ -40,6 +41,9 @@ open class BaseActivity(noWifiViewId: Int = 0) : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         App.ref.eventBus.register(this)
+        // If needed to check this immediately when application start
+        //if( !ConnectivityMonitor.isAvailable() )
+        //    App.ref.eventBus.post(ConnectivityChangedEvent(false))
     }
 
     override fun onPause() {

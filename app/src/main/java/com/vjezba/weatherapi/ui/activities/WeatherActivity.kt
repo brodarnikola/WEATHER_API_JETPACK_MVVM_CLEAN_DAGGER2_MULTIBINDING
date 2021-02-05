@@ -104,12 +104,20 @@ class WeatherActivity : BaseActivity(R.id.no_internet_layout) {
 
     @SuppressLint("MissingPermission")
     private fun getLastLocationListener() {
-        fusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
-            if (location != null) {
-                val currentLatLng = LatLng(location.latitude, location.longitude)
-                addAddressValueToTextView(currentLatLng)
-            }
-        }
+//        fusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
+//            if (location != null) {
+//                val currentLatLng = LatLng(location.latitude, location.longitude)
+//                addAddressValueToTextView(currentLatLng)
+//            }
+//        }
+
+        weatherViewModel.getLastLocationListener(this, fusedLocationClient)
+
+        weatherViewModel.lastLocation.observe(this, Observer { address ->
+            tvCurrentAddress.text = "Current address: " + address.getAddressLine(0)
+            if( address.hasLatitude() && address.hasLongitude() )
+                tvLatLongitude.text = "Latitude: " + address.latitude + " Longitude: " + address.longitude
+        })
     }
 
     private fun requestPermission() {
@@ -129,7 +137,8 @@ class WeatherActivity : BaseActivity(R.id.no_internet_layout) {
 
     private fun addAddressValueToTextView(currentLatLng: LatLng) {
         if( ConnectivityMonitor.isAvailable() ) {
-            weatherViewModel.getLastLocationListener(this, currentLatLng)
+
+            //weatherViewModel.getLastLocationListener(this, currentLatLng)
 
             weatherViewModel.lastLocation.observe(this, Observer { address ->
                 tvCurrentAddress.text = "Current address: " + address.getAddressLine(0)

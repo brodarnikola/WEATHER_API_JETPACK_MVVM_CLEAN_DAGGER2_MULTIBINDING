@@ -16,17 +16,20 @@
 
 package com.vjezba.weatherapi.viewmodels
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.os.Build
+import android.os.Handler
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import com.vjezba.data.database.WeatherDatabase
 import com.vjezba.data.database.mapper.DbMapper
@@ -36,6 +39,7 @@ import com.vjezba.domain.model.MovieResult
 import com.vjezba.domain.model.Weather
 import com.vjezba.domain.model.WeatherData
 import com.vjezba.domain.repository.WeatherRepository
+import com.vjezba.weatherapi.ui.activities.WeatherActivity
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -58,7 +62,7 @@ class WeatherViewModel @ViewModelInject constructor(
     private val compositeDisposable = CompositeDisposable()
 
     private val _weatherMutableLiveData = MutableLiveData<Weather>().apply {
-        value = Weather( "", listOf(), CityData("", 0L) )
+        value = Weather("", listOf(), CityData("", 0L))
     }
 
     val weatherList: LiveData<Weather> = _weatherMutableLiveData
@@ -151,38 +155,95 @@ class WeatherViewModel @ViewModelInject constructor(
     }
 
     private val _lastLocationMutableLiveData = MutableLiveData<Address>().apply {
-        value = Address( Locale("EN") )
+        value = Address(Locale("EN"))
     }
 
     val lastLocation: LiveData<Address> = _lastLocationMutableLiveData
 
-    fun getLastLocationListener( context: Context, currentLatLng: LatLng) {
+    @SuppressLint("MissingPermission")
+    fun getLastLocationListener(
+        context: Context,
+        fusedLocationClient: FusedLocationProviderClient?
+    ) {
+
+        fusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
+            if (location != null) {
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                addAddressValueToTextView( context, currentLatLng)
+            }
+        }
+
+//        Observable.fromCallable {
+//
+//            var address = Address(Locale("en"))
+//            fusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
+//                if (location != null) {
+//                    val currentLatLng = LatLng(location.latitude, location.longitude)
+//                    address = addAddressValueToTextView(context, currentLatLng)
+//                }
+//            }
+//            address
+//
+//            //val address = weatherRepository.getLastLocationListener(context, fusedLocationProviderClient, callback = Handler.Callback,)
+//            //address
+//            //val listDBMovies = getMoviesFromDb()
+//            //Weather("", listDBMovies, CityData())
+//        }
+//            .subscribeOn(Schedulers.io())
+//            //.flatMap { source: List<Articles> -> Observable.fromIterable(source) } // this flatMap is good if you want to iterate, go through list of objects.
+//            //.flatMap { source: News? -> Observable.fromArray(source) or  } // .. iterate through each item
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .doOnNext { data: Address? ->
+//
+//                Log.i("Size of database", "data is: ${data?.getAddressLine(0)}")
+//                _lastLocationMutableLiveData.value?.let { _ ->
+//                    _lastLocationMutableLiveData.value = data
+//                }
+//            }
+//            .subscribe()
 
         //weatherRepository.getLastLocationListener(context, currentLatLng)
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val locale = Locale( getSystemLanguage(context) )
-            val gcd = Geocoder(context, locale)
-
-            var addresses: MutableList<Address> = mutableListOf()
-            try {
-                addresses =
-                    gcd.getFromLocation(currentLatLng.latitude, currentLatLng.longitude, 1)
-            } catch (e: Exception) {
-                Log.i( "ErrorTag","Exception is: ${e}")
-            }
-            withContext(Dispatchers.Main) {
-                if (addresses != null && addresses.size > 0 && addresses[0] != null
-                    && addresses[0].getAddressLine(0) != null )
-                    _lastLocationMutableLiveData.value = addresses[0]
-            }
-        }
+//        viewModelScope.launch(Dispatchers.IO) {
+//            val locale = Locale( getSystemLanguage(context) )
+//            val gcd = Geocoder(context, locale)
+//
+//            var addresses: MutableList<Address> = mutableListOf()
+//            try {
+//                addresses =
+//                    gcd.getFromLocation(currentLatLng.latitude, currentLatLng.longitude, 1)
+//            } catch (e: Exception) {
+//                Log.i( "ErrorTag","Exception is: ${e}")
+//            }
+//            withContext(Dispatchers.Main) {
+//                if (addresses != null && addresses.size > 0 && addresses[0] != null
+//                    && addresses[0].getAddressLine(0) != null )
+//                    _lastLocationMutableLiveData.value = addresses[0]
+//            }
+//        }
     }
 
-    private fun getSystemLanguage(context: Context) : String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+    private fun addAddressValueToTextView(context: Context, currentLatLng: LatLng) {
+        val locale = Locale(getSystemLanguage(context))
+        val gcd = Geocoder(context, locale)
+
+        var address: MutableList<Address> = mutableListOf()
+        try {
+            address =
+                gcd.getFromLocation(currentLatLng.latitude, currentLatLng.longitude, 1)
+        } catch (e: Exception) {
+            Log.i("ErrorTag", "Exception is: ${e}")
+        }
+        if (address != null && address.size > 0 && address[0] != null
+            && address[0].getAddressLine(0) != null
+        )
+            _lastLocationMutableLiveData.value = address[0]
+    }
+
+    private fun getSystemLanguage(context: Context): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             context.resources.configuration.locales.get(0).language.toString()
-        } else{
+        } else {
             context.resources.configuration.locale.language.toString()
         }
     }
