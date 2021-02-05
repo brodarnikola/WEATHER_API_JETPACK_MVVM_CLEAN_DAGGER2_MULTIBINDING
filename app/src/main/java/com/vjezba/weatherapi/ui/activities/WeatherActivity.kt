@@ -1,23 +1,41 @@
 package com.vjezba.weatherapi.ui.activities
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import com.vjezba.domain.model.WeatherData
 import com.vjezba.weatherapi.R
 import com.vjezba.weatherapi.customcontrol.RecyclerViewPaginationListener
+import com.vjezba.weatherapi.network.ConnectivityMonitor
 import com.vjezba.weatherapi.ui.adapters.WeatherAdapter
 import com.vjezba.weatherapi.viewmodels.WeatherViewModel
 import kotlinx.android.synthetic.main.activity_weather.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
 
 
 class WeatherActivity : BaseActivity(R.id.no_internet_layout) {
+
+    private var fusedLocationClient: FusedLocationProviderClient? = null
 
     val weatherViewModel: WeatherViewModel by viewModels()
 
@@ -27,6 +45,10 @@ class WeatherActivity : BaseActivity(R.id.no_internet_layout) {
     private var isLastPage = false
     private var loading = false
     private var page: Int = 1
+
+
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1
+    private var permissionRequestGranted = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +66,10 @@ class WeatherActivity : BaseActivity(R.id.no_internet_layout) {
         super.onStart()
         viewLoaded = true
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        checkLocationListenerSettings()
+
         initializeUi()
 
         weatherViewModel.weatherList.observe(this@WeatherActivity, Observer { items ->
@@ -58,6 +84,62 @@ class WeatherActivity : BaseActivity(R.id.no_internet_layout) {
         })
 
         weatherViewModel.getWeatherForeastDataFromRestApi("")
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: kotlin.IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if( grantResults.isNotEmpty() ) {
+            permissionRequestGranted =
+                requestCode == LOCATION_PERMISSION_REQUEST_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED
+        }
+        getLastLocationListener()
+    }
+
+    private fun checkLocationListenerSettings() {
+        if (!checkPermissions())
+            requestPermission()
+        else
+            getLastLocationListener()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLastLocationListener() {
+        fusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
+            if (location != null) {
+                val currentLatLng = LatLng(location.latitude, location.longitude)
+                addAddressValueToTextView(currentLatLng)
+            }
+        }
+    }
+
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            LOCATION_PERMISSION_REQUEST_CODE
+        )
+    }
+
+    private fun checkPermissions(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun addAddressValueToTextView(currentLatLng: LatLng) {
+        if( ConnectivityMonitor.isAvailable() ) {
+            weatherViewModel.getLastLocationListener(this, currentLatLng)
+
+            weatherViewModel.lastLocation.observe(this, Observer { address ->
+                tvCurrentAddress.text = "Current address: " + address.getAddressLine(0)
+                if( address.hasLatitude() && address.hasLongitude() )
+                    tvLatLongitude.text = "Latitude: " + address.latitude + " Longitude: " + address.longitude
+            })
+        }
+        else {
+
+        }
     }
 
     private fun initializeUi() {

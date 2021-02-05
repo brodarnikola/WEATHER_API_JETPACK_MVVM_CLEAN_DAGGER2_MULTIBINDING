@@ -17,11 +17,17 @@
 package com.vjezba.weatherapi.viewmodels
 
 import android.content.ContentValues
+import android.content.Context
+import android.location.Address
+import android.location.Geocoder
+import android.os.Build
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import com.vjezba.data.database.WeatherDatabase
 import com.vjezba.data.database.mapper.DbMapper
 import com.vjezba.data.networking.ConnectivityUtil
@@ -36,6 +42,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
 
 
 class WeatherViewModel @ViewModelInject constructor(
@@ -58,28 +68,6 @@ class WeatherViewModel @ViewModelInject constructor(
             getWeatherFromNetwork(cityName)
         else
             getWeatherFromLocalStorage()
-    }
-
-    private fun getWeatherFromLocalStorage() {
-        Observable.fromCallable {
-            val listDBMovies = getMoviesFromDb()
-
-            Weather("", listDBMovies, CityData())
-
-            //Movies(0, listDBMovies, 0, 0L)
-        }
-            .subscribeOn(Schedulers.io())
-            //.flatMap { source: List<Articles> -> Observable.fromIterable(source) } // this flatMap is good if you want to iterate, go through list of objects.
-            //.flatMap { source: News? -> Observable.fromArray(source) or  } // .. iterate through each item
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext { data: Weather? ->
-
-                Log.i("Size of database", "")
-                _weatherMutableLiveData.value?.let { _ ->
-                    _weatherMutableLiveData.value = data
-                }
-            }
-            .subscribe()
     }
 
     private fun getWeatherFromNetwork(cityName: String) {
@@ -114,21 +102,28 @@ class WeatherViewModel @ViewModelInject constructor(
             })
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        if (!compositeDisposable.isDisposed)
-            compositeDisposable.dispose()
+    private fun getWeatherFromLocalStorage() {
+        Observable.fromCallable {
+            val listDBMovies = getMoviesFromDb()
+            Weather("", listDBMovies, CityData())
+        }
+            .subscribeOn(Schedulers.io())
+            //.flatMap { source: List<Articles> -> Observable.fromIterable(source) } // this flatMap is good if you want to iterate, go through list of objects.
+            //.flatMap { source: News? -> Observable.fromArray(source) or  } // .. iterate through each item
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext { data: Weather? ->
+
+                Log.i("Size of database", "")
+                _weatherMutableLiveData.value?.let { _ ->
+                    _weatherMutableLiveData.value = data
+                }
+            }
+            .subscribe()
     }
 
     private fun getMoviesFromDb(): List<WeatherData> {
         return dbWeather.weatherDAO().getWeather().map {
-
             dbMapper?.mapDBWeatherListToWeather(it) ?: WeatherData()
-
-//            dbMapper?.mapDBMoviesListToMovies(it)
-//                ?: MovieResult(false, "", listOf(), 0L, "", "", "", 0.0
-//
-//            )
         }
     }
 
@@ -137,7 +132,6 @@ class WeatherViewModel @ViewModelInject constructor(
         Observable.fromCallable {
 
             val weather = dbMapper?.mapDomainWeatherToDbWeather(weather) ?: listOf()
-
             dbWeather.weatherDAO().updateWeather(
                 weather
             )
@@ -154,6 +148,50 @@ class WeatherViewModel @ViewModelInject constructor(
                     "Inserted ${weather.weatherList.size} movies from API in DB..."
                 )
             }
+    }
+
+    private val _lastLocationMutableLiveData = MutableLiveData<Address>().apply {
+        value = Address( Locale("EN") )
+    }
+
+    val lastLocation: LiveData<Address> = _lastLocationMutableLiveData
+
+    fun getLastLocationListener( context: Context, currentLatLng: LatLng) {
+
+        //weatherRepository.getLastLocationListener(context, currentLatLng)
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val locale = Locale( getSystemLanguage(context) )
+            val gcd = Geocoder(context, locale)
+
+            var addresses: MutableList<Address> = mutableListOf()
+            try {
+                addresses =
+                    gcd.getFromLocation(currentLatLng.latitude, currentLatLng.longitude, 1)
+            } catch (e: Exception) {
+                Log.i( "ErrorTag","Exception is: ${e}")
+            }
+            withContext(Dispatchers.Main) {
+                if (addresses != null && addresses.size > 0 && addresses[0] != null
+                    && addresses[0].getAddressLine(0) != null )
+                    _lastLocationMutableLiveData.value = addresses[0]
+            }
+        }
+    }
+
+    private fun getSystemLanguage(context: Context) : String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            context.resources.configuration.locales.get(0).language.toString()
+        } else{
+            context.resources.configuration.locale.language.toString()
+        }
+    }
+
+
+    override fun onCleared() {
+        super.onCleared()
+        if (!compositeDisposable.isDisposed)
+            compositeDisposable.dispose()
     }
 
 }

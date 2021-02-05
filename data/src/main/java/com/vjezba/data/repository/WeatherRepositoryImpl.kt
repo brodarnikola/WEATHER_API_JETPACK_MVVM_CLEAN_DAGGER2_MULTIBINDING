@@ -47,6 +47,10 @@ class WeatherRepositoryImpl constructor(
         return correctResult
     }
 
+//    override fun getLastLocationListener(cityName: String): Flowable<Weather> {
+//
+//    }
+
     // example, practice of rxjava2
     override fun getMovies(page: Int): Flowable<Movies> {
         val moviesResult = service.searchMovies(page)
