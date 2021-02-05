@@ -27,6 +27,7 @@ import com.vjezba.data.database.mapper.DbMapper
 import com.vjezba.data.networking.ConnectivityUtil
 import com.vjezba.domain.model.MovieResult
 import com.vjezba.domain.model.Movies
+import com.vjezba.domain.model.Weather
 import com.vjezba.domain.repository.WeatherRepository
 import io.reactivex.Observable
 import io.reactivex.Observer
@@ -36,7 +37,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 
-class MoviesViewModel @ViewModelInject constructor(
+class WeatherViewModel @ViewModelInject constructor(
     private val weatherRepository: WeatherRepository,
     private val dbWeather: WeatherDatabase,
     private val dbMapper: DbMapper?,
@@ -45,53 +46,55 @@ class MoviesViewModel @ViewModelInject constructor(
 
     private val compositeDisposable = CompositeDisposable()
 
-    private val _moviesMutableLiveData = MutableLiveData<Movies>().apply {
-        value = Movies(0, listOf(), 0, 0L)
+    private val _weatherMutableLiveData = MutableLiveData<Weather>().apply {
+        value = Weather() //Movies(0, listOf(), 0, 0L)
     }
 
-    val moviesList: LiveData<Movies> = _moviesMutableLiveData
+    val weatherList: LiveData<Weather> = _weatherMutableLiveData
 
-    fun getMoviesFromServer(page: Int) {
-        if (connectivityUtil.isConnectedToInternet()) {
-            getMoviesFromNetwork(page)
-        } else {
-
-            Observable.fromCallable {
-                val listDBMovies = getMoviesFromDb()
-
-                Movies(0, listDBMovies, 0, 0L)
-            }
-                .subscribeOn(Schedulers.io())
-                //.flatMap { source: List<Articles> -> Observable.fromIterable(source) } // this flatMap is good if you want to iterate, go through list of objects.
-                //.flatMap { source: News? -> Observable.fromArray(source) or  } // .. iterate through each item
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { data: Movies? ->
-
-                    Log.i("Size of database", "")
-                    _moviesMutableLiveData.value?.let { _ ->
-                        _moviesMutableLiveData.value = data
-                    }
-                }
-                .subscribe()
-        }
+    fun getWeatherForeastDataFromRestApi(cityName: String) {
+        if (connectivityUtil.isConnectedToInternet())
+            getWeatherFromNetwork(cityName)
+        else
+            getWeatherFromLocalStorage()
     }
 
-    private fun getMoviesFromNetwork(page: Int) {
-        weatherRepository.getMovies(page)
+    private fun getWeatherFromLocalStorage() {
+//        Observable.fromCallable {
+//            val listDBMovies = getMoviesFromDb()
+//
+//            Movies(0, listDBMovies, 0, 0L)
+//        }
+//            .subscribeOn(Schedulers.io())
+//            //.flatMap { source: List<Articles> -> Observable.fromIterable(source) } // this flatMap is good if you want to iterate, go through list of objects.
+//            //.flatMap { source: News? -> Observable.fromArray(source) or  } // .. iterate through each item
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .doOnNext { data: Movies? ->
+//
+//                Log.i("Size of database", "")
+//                _weatherMutableLiveData.value?.let { _ ->
+//                    _weatherMutableLiveData.value = data
+//                }
+//            }
+//            .subscribe()
+    }
+
+    private fun getWeatherFromNetwork(cityName: String) {
+        weatherRepository.getWeatherData(cityName)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .toObservable()
-            .subscribe(object : Observer<Movies> {
+            .subscribe(object : Observer<Weather> {
                 override fun onSubscribe(d: Disposable) {
                     compositeDisposable.add(d)
                 }
 
-                override fun onNext(response: Movies) {
+                override fun onNext(response: Weather) {
 
-                    insertMoviesIntoDB(response)
+                    //insertMoviesIntoDB(response)
 
-                    _moviesMutableLiveData.value?.let {
-                        _moviesMutableLiveData.value = response
+                    _weatherMutableLiveData.value?.let {
+                        _weatherMutableLiveData.value = response
                     }
                 }
 

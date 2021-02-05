@@ -23,17 +23,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.vjezba.domain.model.Trailer
-import com.vjezba.domain.repository.MoviesRepository
+import com.vjezba.domain.repository.WeatherRepository
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
 
 
 class TrailersViewModel @ViewModelInject constructor(
-    private val moviesRepository: MoviesRepository
+    private val weatherRepository: WeatherRepository
 ) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
@@ -45,7 +44,7 @@ class TrailersViewModel @ViewModelInject constructor(
     val trailerList: LiveData<Trailer> = _trailerMutableLiveData
 
     fun getTrailers(movieId: Long) {
-        moviesRepository.getTrailers(movieId)
+        weatherRepository.getTrailers(movieId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .toObservable()

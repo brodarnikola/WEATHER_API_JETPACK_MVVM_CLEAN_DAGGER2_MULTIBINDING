@@ -17,10 +17,7 @@
 package com.vjezba.data.networking
 
 
-import com.vjezba.data.networking.model.ApiActors
-import com.vjezba.data.networking.model.ApiMovies
-import com.vjezba.data.networking.model.ApiMovieDetails
-import com.vjezba.data.networking.model.ApiTrailers
+import com.vjezba.data.networking.model.*
 import io.reactivex.Flowable
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -28,7 +25,20 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 
-interface MovieRepositoryApi {
+interface WeatherRepositoryApi {
+
+    // weather api key ->   b389e4ccf5ae4bbc8072ccd05c8f85c7
+
+
+    @GET("forecast")
+    @Headers("Content-Type: application/json")
+    fun getForecast( @Query("q") cityName: String, @Query("appId") appId: String ): Flowable<ApiWeather>
+
+
+
+
+
+
 
     @GET("discover/movie?api_key=fea6a69ff7391818240b67fa3bb83786&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page")
     @Headers("Content-Type: application/json")
@@ -42,9 +52,11 @@ interface MovieRepositoryApi {
     @Headers("Content-Type: application/json")
     fun getTrailers( @Path("movieId") movieId: Long ): Flowable<ApiTrailers>
 
-
     @GET("movie/{movieId}/credits?api_key=fea6a69ff7391818240b67fa3bb83786&language=en-US")
     @Headers("Content-Type: application/json")
     fun getActors( @Path("movieId") movieId: Long ): Flowable<ApiActors>
+
+
+
 
 }

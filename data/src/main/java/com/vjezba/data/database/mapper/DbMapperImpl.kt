@@ -31,13 +31,32 @@
 package com.vjezba.data.database.mapper
 
 import com.vjezba.data.database.model.DBMovies
-import com.vjezba.data.networking.model.ApiActors
-import com.vjezba.data.networking.model.ApiMovieDetails
-import com.vjezba.data.networking.model.ApiMovies
-import com.vjezba.data.networking.model.ApiTrailers
+import com.vjezba.data.networking.model.*
 import com.vjezba.domain.model.*
 
 class DbMapperImpl : DbMapper {
+
+
+    override fun mapApiWeatherToDomainWeather(apiWeather: ApiWeather): Weather {
+        return with(apiWeather) {
+            Weather(
+                code,
+                weatherList.map {
+                    with(it) {
+                        WeatherData(
+                            WeatherMain( it.main.temp, it.main.feelsLike, it.main.tempMax),
+                            it.weather.map {
+                                WeatherDescription(it.description)
+                            },
+                            WeatherWind( it.wind.speed),
+                            dateAndTime
+                        )
+                    }
+                },
+                CityData( cityData.country, cityData.population )
+            )
+        }
+    }
 
     override fun mapApiMoviesToDomainMovies(apiMovies: ApiMovies): Movies {
         return with(apiMovies) {

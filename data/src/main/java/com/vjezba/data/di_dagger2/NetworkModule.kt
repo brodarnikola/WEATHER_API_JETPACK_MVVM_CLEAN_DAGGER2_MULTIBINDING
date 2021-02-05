@@ -16,17 +16,14 @@
 
 package com.vjezba.data.di
 
-import android.app.Application
 import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.vjezba.data.BuildConfig
-import com.vjezba.data.networking.ConnectivityUtil
-import com.vjezba.data.networking.MovieRepositoryApi
+import com.vjezba.data.networking.WeatherRepositoryApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.ApplicationComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -37,7 +34,7 @@ import javax.inject.Singleton
 
 
 
-private const val RETROFIT_BASE_URL = "https://api.themoviedb.org/3/"
+private const val RETROFIT_BASE_URL = "https://api.openweathermap.org/data/2.5/"
 
 @Module
 @InstallIn(ApplicationComponent::class)
@@ -81,10 +78,10 @@ class NetworkModuleHilt {
 
     @Singleton
     @Provides
-    fun provideGithubService(retrofit: Retrofit.Builder): MovieRepositoryApi {
+    fun provideGithubService(retrofit: Retrofit.Builder): WeatherRepositoryApi {
         return retrofit
             .build()
-            .create(MovieRepositoryApi::class.java)
+            .create(WeatherRepositoryApi::class.java)
     }
 
 }

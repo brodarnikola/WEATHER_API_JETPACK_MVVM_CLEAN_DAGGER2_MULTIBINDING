@@ -16,14 +16,14 @@
 
 package com.vjezba.domain.repository
 
-import com.vjezba.domain.model.Actors
-import com.vjezba.domain.model.MovieDetails
-import com.vjezba.domain.model.Movies
-import com.vjezba.domain.model.Trailer
+import com.vjezba.domain.model.*
 import io.reactivex.Flowable
 
 
-interface MoviesRepository {
+interface WeatherRepository {
+
+    fun getWeatherData(cityName: String) : Flowable<Weather>
+
 
     fun getMovies(page: Int) : Flowable<Movies>
 

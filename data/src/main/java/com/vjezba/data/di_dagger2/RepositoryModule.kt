@@ -16,11 +16,11 @@
 
 package com.vjezba.data.di
 
-import com.vjezba.data.database.MoviesDatabase
+import com.vjezba.data.database.WeatherDatabase
 import com.vjezba.data.database.mapper.DbMapper
-import com.vjezba.data.networking.MovieRepositoryApi
-import com.vjezba.data.repository.MoviesRepositoryImpl
-import com.vjezba.domain.repository.MoviesRepository
+import com.vjezba.data.networking.WeatherRepositoryApi
+import com.vjezba.data.repository.WeatherRepositoryImpl
+import com.vjezba.domain.repository.WeatherRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,7 +31,7 @@ import dagger.hilt.android.components.ActivityComponent
 class RepositoryModule {
 
     @Provides
-    fun provideAllNewsFromRestApiNetworkOrFromRoom(moviesDatabase: MoviesDatabase, movieRepositoryApi: MovieRepositoryApi, dbMapper : DbMapper) : MoviesRepository {
-        return MoviesRepositoryImpl(moviesDatabase, movieRepositoryApi, dbMapper)
+    fun provideAllNewsFromRestApiNetworkOrFromRoom(weatherDatabase: WeatherDatabase, weatherRepositoryApi: WeatherRepositoryApi, dbMapper : DbMapper) : WeatherRepository {
+        return WeatherRepositoryImpl(weatherDatabase, weatherRepositoryApi, dbMapper)
     }
 }

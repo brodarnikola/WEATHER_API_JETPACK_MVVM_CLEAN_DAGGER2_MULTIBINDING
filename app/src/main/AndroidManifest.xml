@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Github">
         <activity
-            android:name="com.vjezba.weatherapi.ui.activities.MoviesActivity" >
+            android:name="com.vjezba.weatherapi.ui.activities.WeatherActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -23,11 +23,14 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="com.vjezba.weatherapi.ui.activities.MoviesActivity" />
+        <activity
             android:name="com.vjezba.weatherapi.ui.activities.MoviesDetailsActivity" />
         <activity
             android:name="com.vjezba.weatherapi.ui.activities.TrailersActivity" />
         <activity
             android:name="com.vjezba.weatherapi.ui.activities.ActorsActivity" />
+
     </application>
 
 </manifest>
