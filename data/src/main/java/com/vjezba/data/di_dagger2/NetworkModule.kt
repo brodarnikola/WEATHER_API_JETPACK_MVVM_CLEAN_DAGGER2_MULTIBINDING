@@ -87,11 +87,4 @@ class NetworkModuleHilt {
             .create(MovieRepositoryApi::class.java)
     }
 
-    @Provides
-    @Singleton
-    fun provideNetworkUtils(app: Application) : ConnectivityUtil {
-        return ConnectivityUtil(app)
-    }
-
-
 }

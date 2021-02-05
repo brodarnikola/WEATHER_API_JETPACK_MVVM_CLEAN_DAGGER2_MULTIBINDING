@@ -5,14 +5,20 @@ import android.os.Looper
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.vjezba.data.networking.ConnectivityUtil
 import com.vjezba.weatherapi.App
 import com.vjezba.weatherapi.network.ConnectivityChangedEvent
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import javax.inject.Inject
 
 @AndroidEntryPoint
 open class BaseActivity(noWifiViewId: Int = 0) : AppCompatActivity() {
+
+    @Inject
+    lateinit var connectivityUtil: ConnectivityUtil
 
     protected var viewLoaded = false
 

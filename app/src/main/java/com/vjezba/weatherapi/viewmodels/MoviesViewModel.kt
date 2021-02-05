@@ -68,6 +68,7 @@ class MoviesViewModel @ViewModelInject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { data: Movies? ->
 
+                    Log.i("Size of database", "")
                     _moviesMutableLiveData.value?.let { _ ->
                         _moviesMutableLiveData.value = data
                     }
@@ -127,8 +128,9 @@ class MoviesViewModel @ViewModelInject constructor(
 
         Observable.fromCallable {
 
+            val movies = dbMapper?.mapDomainMoviesToDbMovies(movies) ?: listOf()
             dbMovies.moviesDAO().updateMovies(
-                dbMapper?.mapDomainMoviesToDbMovies(movies) ?: listOf()
+                movies
             )
             Log.d(
                 "da li ce uci unutra * ",
