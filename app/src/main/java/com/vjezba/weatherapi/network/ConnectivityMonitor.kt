@@ -8,6 +8,8 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.os.Build
+import com.vjezba.weatherapi.App
+import com.vjezba.weatherapi.ui.activities.BaseActivity
 
 
 internal sealed class ConnectivityMonitor(protected val connectivityManager: ConnectivityManager) {

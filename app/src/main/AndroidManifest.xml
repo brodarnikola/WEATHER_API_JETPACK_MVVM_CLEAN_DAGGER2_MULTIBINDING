@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Github">
         <activity
-            android:name="com.vjezba.weatherapi.ui.activities.WeatherActivity" >
+            android:name="com.vjezba.weatherapi.ui.activities.SplashActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,6 +31,9 @@
             android:name="com.vjezba.weatherapi.ui.activities.TrailersActivity" />
         <activity
             android:name="com.vjezba.weatherapi.ui.activities.ActorsActivity" />
+
+        <activity
+            android:name="com.vjezba.weatherapi.ui.activities.WeatherActivity" />
 
     </application>
 

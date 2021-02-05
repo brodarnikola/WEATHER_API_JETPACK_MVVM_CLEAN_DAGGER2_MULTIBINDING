@@ -36,7 +36,7 @@ class App : Application() {
     //instance = this
 
     ConnectivityMonitor.initialize(this) { available ->
-      eventBus.post(ConnectivityChangedEvent(available))
+        eventBus.post(ConnectivityChangedEvent(available))
     }
 
   }
