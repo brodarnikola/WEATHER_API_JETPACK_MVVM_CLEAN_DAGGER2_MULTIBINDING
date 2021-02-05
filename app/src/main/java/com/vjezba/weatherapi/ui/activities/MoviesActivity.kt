@@ -9,14 +9,18 @@ import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.vjezba.data.networking.ConnectivityUtil
 import com.vjezba.weatherapi.R
 import com.vjezba.weatherapi.customcontrol.RecyclerViewPaginationListener
 import com.vjezba.weatherapi.ui.adapters.MoviesAdapter
 import com.vjezba.weatherapi.viewmodels.MoviesViewModel
 import com.vjezba.domain.model.MovieResult
+import com.vjezba.weatherapi.App
+import com.vjezba.weatherapi.network.ConnectivityMonitor
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.android.synthetic.main.activity_movie.*
-
-
+import javax.inject.Inject
 
 
 class MoviesActivity : BaseActivity(R.id.no_internet_layout) {
@@ -29,6 +33,7 @@ class MoviesActivity : BaseActivity(R.id.no_internet_layout) {
     private var isLastPage = false
     private var loading = false
     private var page: Int = 1
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +75,6 @@ class MoviesActivity : BaseActivity(R.id.no_internet_layout) {
         }
         movies_list.adapter = moviesAdapter
 
-
         /**
          * add scroll listener while user reach in bottom load more will call
          */
@@ -78,7 +82,8 @@ class MoviesActivity : BaseActivity(R.id.no_internet_layout) {
 
             override fun loadMoreItems() {
                 loading = true
-                doRestApiCall()
+                if( connectivityUtil.isConnectedToInternet() )
+                    doRestApiCall()
             }
 
             override fun isLastPage(): Boolean {
@@ -95,7 +100,6 @@ class MoviesActivity : BaseActivity(R.id.no_internet_layout) {
         moviesAdapter.addLoading()
         page++
         moviesViewModel.getMoviesFromServer(page)
-
         Log.d(ContentValues.TAG, "Da li ce uci sim uuuuuu pageNumber is: ${page}")
     }
 

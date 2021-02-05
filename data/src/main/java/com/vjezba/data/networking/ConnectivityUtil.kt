@@ -3,10 +3,12 @@ package com.vjezba.data.networking
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 
-class ConnectivityUtil @Inject constructor(private val context: Context) {
+class ConnectivityUtil @Inject constructor( @ApplicationContext val context: Context) {
 
     fun isConnectedToInternet(): Boolean {
         var have_WIFI = false
