@@ -23,17 +23,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.vjezba.domain.model.MovieDetails
-import com.vjezba.domain.repository.MoviesRepository
+import com.vjezba.domain.repository.WeatherRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.util.*
-import javax.inject.Inject
 
 
 class MovieDetailsViewModel @ViewModelInject constructor(
-    val movieRepository: MoviesRepository
+    val movieRepository: WeatherRepository
 ) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()

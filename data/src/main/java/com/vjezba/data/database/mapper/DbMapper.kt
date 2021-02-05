@@ -1,16 +1,21 @@
 package com.vjezba.data.database.mapper
 
 import com.vjezba.data.database.model.DBMovies
-import com.vjezba.data.networking.model.ApiActors
-import com.vjezba.data.networking.model.ApiMovieDetails
-import com.vjezba.data.networking.model.ApiMovies
-import com.vjezba.data.networking.model.ApiTrailers
+import com.vjezba.data.networking.model.*
 import com.vjezba.domain.model.*
 
 
 interface DbMapper {
 
+    // weather
+    fun mapApiWeatherToDomainWeather(apiWeather: ApiWeather): Weather
+
+
+
+    // movie
     fun mapApiMoviesToDomainMovies(apiNews: ApiMovies): Movies
+
+
 
     fun mapApiMovieDetailsToDomainMovieDetails(apiMovieDetails: ApiMovieDetails): MovieDetails
 

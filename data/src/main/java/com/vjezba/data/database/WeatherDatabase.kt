@@ -32,17 +32,17 @@ private const val DB_NAME = "news_database"
  */
 @Database(entities = [DBMovies::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
-abstract class MoviesDatabase : RoomDatabase() {
+abstract class WeatherDatabase : RoomDatabase() {
 
     abstract fun moviesDAO(): MoviesDao
 
     companion object {
 
-        fun create(context: Context): MoviesDatabase {
+        fun create(context: Context): WeatherDatabase {
 
             return Room.databaseBuilder(
                 context,
-                MoviesDatabase::class.java,
+                WeatherDatabase::class.java,
                 DB_NAME
             ).build()
         }

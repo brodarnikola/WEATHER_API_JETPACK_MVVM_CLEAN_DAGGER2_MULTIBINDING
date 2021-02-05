@@ -17,24 +17,35 @@
 package com.vjezba.data.repository
 
 import android.util.Log
-import com.vjezba.data.database.MoviesDatabase
+import com.vjezba.data.database.WeatherDatabase
 import com.vjezba.data.database.mapper.DbMapper
-import com.vjezba.data.networking.MovieRepositoryApi
-import com.vjezba.domain.model.Actors
-import com.vjezba.domain.model.MovieDetails
-import com.vjezba.domain.model.Movies
-import com.vjezba.domain.model.Trailer
-import com.vjezba.domain.repository.MoviesRepository
+import com.vjezba.data.networking.WeatherRepositoryApi
+import com.vjezba.domain.model.*
+import com.vjezba.domain.repository.WeatherRepository
 import io.reactivex.Flowable
 
 /**
  * RepositoryResponseApi module for handling data operations.
  */
-class MoviesRepositoryImpl constructor(
-    private val dbMovies: MoviesDatabase,
-    private val service: MovieRepositoryApi,
+
+class WeatherRepositoryImpl constructor(
+    private val database: WeatherDatabase,
+    private val service: WeatherRepositoryApi,
     private val dbMapper: DbMapper?
-) : MoviesRepository {
+) : WeatherRepository {
+
+    override fun getWeatherData(cityName: String): Flowable<Weather> {
+
+        val appId = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
+        val result = service.getForecast("Zagreb", appId)
+
+        Log.i("Da li ce uci", "AAAA Hoce li svakih 10 sekundi skinuti nove podatke")
+        //Observable.concatArrayEager(newsResult, observableFromDB)
+
+        val correctResult = result.map { dbMapper?.mapApiWeatherToDomainWeather(it)!! }
+
+        return correctResult
+    }
 
     // example, practice of rxjava2
     override fun getMovies(page: Int): Flowable<Movies> {
