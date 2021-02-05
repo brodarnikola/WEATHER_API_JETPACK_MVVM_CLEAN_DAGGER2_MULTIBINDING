@@ -18,7 +18,7 @@ package com.vjezba.data.di
 
 import android.app.Application
 import com.vjezba.data.database.WeatherDatabase
-import com.vjezba.data.database.dao.MoviesDao
+import com.vjezba.data.database.dao.WeatherDAO
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,8 +34,8 @@ class DatabaseModule {
     fun provideAppDatabase( app: Application) = WeatherDatabase.create(app)
 
     @Provides
-    fun providePlantDao(weatherDatabase: WeatherDatabase): MoviesDao {
-        return weatherDatabase.moviesDAO()
+    fun providePlantDao(weatherDatabase: WeatherDatabase): WeatherDAO {
+        return weatherDatabase.weatherDAO()
     }
 
 

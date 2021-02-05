@@ -30,11 +30,11 @@ private const val DB_NAME = "news_database"
 /**
  * The Room database for this app
  */
-@Database(entities = [DBMovies::class], version = 1, exportSchema = false)
+@Database(entities = [DBWeather::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class WeatherDatabase : RoomDatabase() {
 
-    abstract fun moviesDAO(): MoviesDao
+    abstract fun weatherDAO(): WeatherDAO
 
     companion object {
 

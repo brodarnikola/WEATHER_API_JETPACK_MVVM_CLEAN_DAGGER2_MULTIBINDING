@@ -30,7 +30,7 @@
 
 package com.vjezba.data.database.mapper
 
-import com.vjezba.data.database.model.DBMovies
+import com.vjezba.data.database.model.DBWeather
 import com.vjezba.data.networking.model.*
 import com.vjezba.domain.model.*
 
@@ -44,19 +44,44 @@ class DbMapperImpl : DbMapper {
                 weatherList.map {
                     with(it) {
                         WeatherData(
-                            WeatherMain( it.main.temp, it.main.feelsLike, it.main.tempMax),
+                            WeatherMain(it.main.temp, it.main.feelsLike, it.main.tempMax),
                             it.weather.map {
                                 WeatherDescription(it.description)
                             },
-                            WeatherWind( it.wind.speed),
+                            WeatherWind(it.wind.speed),
                             dateAndTime
                         )
                     }
                 },
-                CityData( cityData.country, cityData.population )
+                CityData(cityData.country, cityData.population)
             )
         }
     }
+
+    override fun mapDomainWeatherToDbWeather(weather: Weather): List<DBWeather> {
+        return weather.weatherList.map {
+            DBWeather(
+                it.main.temp,
+                it.main.feelsLike,
+                it.main.tempMax,
+                it.weather[0].description,
+                it.wind.speed,
+                it.dateAndTime
+            )
+        }
+    }
+
+    override fun mapDBWeatherListToWeather(weather: DBWeather): WeatherData {
+        return with(weather) {
+            WeatherData(
+                WeatherMain( weather.temp, weather.feelsLike, weather.tempMax ),
+                listOf(WeatherDescription( weather.description )),
+                WeatherWind(weather.speed),
+                dateAndTime
+            )
+        }
+    }
+
 
     override fun mapApiMoviesToDomainMovies(apiMovies: ApiMovies): Movies {
         return with(apiMovies) {
@@ -86,33 +111,35 @@ class DbMapperImpl : DbMapper {
         }
     }
 
-    override fun mapDomainMoviesToDbMovies(moviesList: Movies): List<DBMovies> {
-        return moviesList.result.map {
-            with(it) {
-                DBMovies(
-                    id ?: 0,
-                    idOfMovie = it.id ?: 0L,
-                    backdropPath = it.backdropPath,
-                    originalLanguage = it.originalLanguage,
-                    originalTitle = it.originalTitle,
-                    overview = it.overview,
-                    popularity = it.popularity
-                )
-            }
-        }
+    override fun mapDomainMoviesToDbMovies(moviesList: Movies): List<DBWeather> {
+//        return moviesList.result.map {
+//            with(it) {
+//                DBWeather(
+//                    id ?: 0,
+//                    idOfMovie = it.id ?: 0L,
+//                    backdropPath = it.backdropPath,
+//                    originalLanguage = it.originalLanguage,
+//                    originalTitle = it.originalTitle,
+//                    overview = it.overview,
+//                    popularity = it.popularity
+//                )
+//            }
+//        }
+        return listOf()
     }
 
-    override fun mapDBMoviesListToMovies(moviesList: DBMovies): MovieResult {
-        return with(moviesList) {
-            MovieResult(
-                id = id,
-                backdropPath = backdropPath,
-                originalLanguage = originalLanguage,
-                originalTitle = originalTitle,
-                overview = overview,
-                popularity = popularity
-            )
-        }
+    override fun mapDBMoviesListToMovies(weatherList: DBWeather): MovieResult {
+//        return with(weatherList) {
+//            MovieResult(
+//                id = id,
+//                backdropPath = backdropPath,
+//                originalLanguage = originalLanguage,
+//                originalTitle = originalTitle,
+//                overview = overview,
+//                popularity = popularity
+//            )
+//        }
+        return MovieResult()
     }
 
     override fun mapApiTrailersToDomainTrailers(apiTrailers: ApiTrailers): Trailer {

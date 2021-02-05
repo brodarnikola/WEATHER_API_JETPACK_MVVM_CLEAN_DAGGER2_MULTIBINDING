@@ -115,7 +115,7 @@ class MoviesViewModel @ViewModelInject constructor(
     }
 
     private fun getMoviesFromDb(): List<MovieResult> {
-        return dbWeather.moviesDAO().getMovies().map {
+        return dbWeather.weatherDAO().getWeather().map {
             dbMapper?.mapDBMoviesListToMovies(it) ?: MovieResult(
                 false, "", listOf(), 0L, "", "", "", 0.0
 
@@ -128,7 +128,7 @@ class MoviesViewModel @ViewModelInject constructor(
         Observable.fromCallable {
 
             val movies = dbMapper?.mapDomainMoviesToDbMovies(movies) ?: listOf()
-            dbWeather.moviesDAO().updateMovies(
+            dbWeather.weatherDAO().updateWeather(
                 movies
             )
             Log.d(

@@ -25,9 +25,10 @@ import androidx.lifecycle.ViewModel
 import com.vjezba.data.database.WeatherDatabase
 import com.vjezba.data.database.mapper.DbMapper
 import com.vjezba.data.networking.ConnectivityUtil
+import com.vjezba.domain.model.CityData
 import com.vjezba.domain.model.MovieResult
-import com.vjezba.domain.model.Movies
 import com.vjezba.domain.model.Weather
+import com.vjezba.domain.model.WeatherData
 import com.vjezba.domain.repository.WeatherRepository
 import io.reactivex.Observable
 import io.reactivex.Observer
@@ -47,7 +48,7 @@ class WeatherViewModel @ViewModelInject constructor(
     private val compositeDisposable = CompositeDisposable()
 
     private val _weatherMutableLiveData = MutableLiveData<Weather>().apply {
-        value = Weather() //Movies(0, listOf(), 0, 0L)
+        value = Weather( "", listOf(), CityData("", 0L) )
     }
 
     val weatherList: LiveData<Weather> = _weatherMutableLiveData
@@ -60,23 +61,25 @@ class WeatherViewModel @ViewModelInject constructor(
     }
 
     private fun getWeatherFromLocalStorage() {
-//        Observable.fromCallable {
-//            val listDBMovies = getMoviesFromDb()
-//
-//            Movies(0, listDBMovies, 0, 0L)
-//        }
-//            .subscribeOn(Schedulers.io())
-//            //.flatMap { source: List<Articles> -> Observable.fromIterable(source) } // this flatMap is good if you want to iterate, go through list of objects.
-//            //.flatMap { source: News? -> Observable.fromArray(source) or  } // .. iterate through each item
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .doOnNext { data: Movies? ->
-//
-//                Log.i("Size of database", "")
-//                _weatherMutableLiveData.value?.let { _ ->
-//                    _weatherMutableLiveData.value = data
-//                }
-//            }
-//            .subscribe()
+        Observable.fromCallable {
+            val listDBMovies = getMoviesFromDb()
+
+            Weather("", listDBMovies, CityData())
+
+            //Movies(0, listDBMovies, 0, 0L)
+        }
+            .subscribeOn(Schedulers.io())
+            //.flatMap { source: List<Articles> -> Observable.fromIterable(source) } // this flatMap is good if you want to iterate, go through list of objects.
+            //.flatMap { source: News? -> Observable.fromArray(source) or  } // .. iterate through each item
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext { data: Weather? ->
+
+                Log.i("Size of database", "")
+                _weatherMutableLiveData.value?.let { _ ->
+                    _weatherMutableLiveData.value = data
+                }
+            }
+            .subscribe()
     }
 
     private fun getWeatherFromNetwork(cityName: String) {
@@ -91,7 +94,7 @@ class WeatherViewModel @ViewModelInject constructor(
 
                 override fun onNext(response: Weather) {
 
-                    //insertMoviesIntoDB(response)
+                    insertWeatherIntoDatabase(response)
 
                     _weatherMutableLiveData.value?.let {
                         _weatherMutableLiveData.value = response
@@ -117,22 +120,26 @@ class WeatherViewModel @ViewModelInject constructor(
             compositeDisposable.dispose()
     }
 
-    private fun getMoviesFromDb(): List<MovieResult> {
-        return dbWeather.moviesDAO().getMovies().map {
-            dbMapper?.mapDBMoviesListToMovies(it) ?: MovieResult(
-                false, "", listOf(), 0L, "", "", "", 0.0
+    private fun getMoviesFromDb(): List<WeatherData> {
+        return dbWeather.weatherDAO().getWeather().map {
 
-            )
+            dbMapper?.mapDBWeatherListToWeather(it) ?: WeatherData()
+
+//            dbMapper?.mapDBMoviesListToMovies(it)
+//                ?: MovieResult(false, "", listOf(), 0L, "", "", "", 0.0
+//
+//            )
         }
     }
 
-    private fun insertMoviesIntoDB(movies: Movies) {
+    private fun insertWeatherIntoDatabase(weather: Weather) {
 
         Observable.fromCallable {
 
-            val movies = dbMapper?.mapDomainMoviesToDbMovies(movies) ?: listOf()
-            dbWeather.moviesDAO().updateMovies(
-                movies
+            val weather = dbMapper?.mapDomainWeatherToDbWeather(weather) ?: listOf()
+
+            dbWeather.weatherDAO().updateWeather(
+                weather
             )
             Log.d(
                 "da li ce uci unutra * ",
@@ -144,7 +151,7 @@ class WeatherViewModel @ViewModelInject constructor(
             .subscribe {
                 Log.d(
                     "Hoce spremiti vijesti",
-                    "Inserted ${movies.result.size} movies from API in DB..."
+                    "Inserted ${weather.weatherList.size} movies from API in DB..."
                 )
             }
     }

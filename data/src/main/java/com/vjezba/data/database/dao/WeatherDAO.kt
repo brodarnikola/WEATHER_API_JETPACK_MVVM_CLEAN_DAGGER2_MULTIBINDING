@@ -31,25 +31,25 @@
 package com.vjezba.data.database.dao
 
 import androidx.room.*
-import com.vjezba.data.database.model.DBMovies
+import com.vjezba.data.database.model.DBWeather
 
 @Dao
-interface MoviesDao {
+interface WeatherDAO {
 
-  @Query("SELECT * FROM movie_table")
-  fun getMovies(): List<DBMovies>
+  @Query("SELECT * FROM weather_table")
+  fun getWeather(): List<DBWeather>
 
   @Transaction
-  fun updateMovies(articles: List<DBMovies>) {
-    clearNews()
-    insertAllNews(articles)
+  fun updateWeather(weatherData: List<DBWeather>) {
+    clearWeather()
+    insertAllWeatherData(weatherData)
   }
 
-  @Query("DELETE FROM movie_table")
-  fun clearNews()
+  @Query("DELETE FROM weather_table")
+  fun clearWeather()
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  fun insertAllNews(articles: List<DBMovies>)
+  fun insertAllWeatherData(articles: List<DBWeather>)
 
 
 

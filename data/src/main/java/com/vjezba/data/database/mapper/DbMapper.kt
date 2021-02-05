@@ -1,6 +1,6 @@
 package com.vjezba.data.database.mapper
 
-import com.vjezba.data.database.model.DBMovies
+import com.vjezba.data.database.model.DBWeather
 import com.vjezba.data.networking.model.*
 import com.vjezba.domain.model.*
 
@@ -10,6 +10,9 @@ interface DbMapper {
     // weather
     fun mapApiWeatherToDomainWeather(apiWeather: ApiWeather): Weather
 
+    fun mapDomainWeatherToDbWeather(weather: Weather): List<DBWeather>
+
+    fun mapDBWeatherListToWeather(weather: DBWeather): WeatherData
 
 
     // movie
@@ -19,9 +22,9 @@ interface DbMapper {
 
     fun mapApiMovieDetailsToDomainMovieDetails(apiMovieDetails: ApiMovieDetails): MovieDetails
 
-    fun mapDomainMoviesToDbMovies(newsList: Movies): List<DBMovies>
+    fun mapDomainMoviesToDbMovies(newsList: Movies): List<DBWeather>
 
-    fun mapDBMoviesListToMovies(articlesList: DBMovies): MovieResult
+    fun mapDBMoviesListToMovies(articlesList: DBWeather): MovieResult
 
 
     fun mapApiTrailersToDomainTrailers(apiTrailers: ApiTrailers): Trailer
