@@ -24,6 +24,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.vjezba.data.database.WeatherDatabase
 import com.vjezba.data.database.mapper.DbMapper
+import com.vjezba.data.networking.ConnectivityUtil
 import com.vjezba.domain.model.CityData
 import com.vjezba.domain.model.Forecast
 import com.vjezba.domain.model.ForecastData
@@ -36,21 +37,29 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 
-class ForecastViewModel @ViewModelInject constructor(
+class ForecastDatabaseViewModel @ViewModelInject constructor(
     private val weatherRepository: WeatherRepository,
     private val dbWeather: WeatherDatabase,
-    private val dbMapper: DbMapper?
+    private val dbMapper: DbMapper?,
+    private val connectivityUtil: ConnectivityUtil
 ) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
-    private val _forecastMutableLiveData = MutableLiveData<Forecast>().apply {
+    private val _weatherMutableLiveData = MutableLiveData<Forecast>().apply {
         value = Forecast("", listOf(), CityData("", 0L))
     }
 
-    val forecastList: LiveData<Forecast> = _forecastMutableLiveData
+    val forecastList: LiveData<Forecast> = _weatherMutableLiveData
 
-    fun getForecastFromNetwork(cityName: String) {
+    fun getWeatherForeastDataFromRestApi(cityName: String) {
+        if (connectivityUtil.isConnectedToInternet())
+            getWeatherFromNetwork(cityName)
+        else
+            getWeatherFromLocalStorage()
+    }
+
+    private fun getWeatherFromNetwork(cityName: String) {
         weatherRepository.getForecastData(cityName)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -62,10 +71,10 @@ class ForecastViewModel @ViewModelInject constructor(
 
                 override fun onNext(response: Forecast) {
 
-                    insertWeatherIntoDatabase(response)
+                    //insertWeatherIntoDatabase(response)
 
-                    _forecastMutableLiveData.value?.let {
-                        _forecastMutableLiveData.value = response
+                    _weatherMutableLiveData.value?.let {
+                        _weatherMutableLiveData.value = response
                     }
                 }
 
@@ -80,6 +89,29 @@ class ForecastViewModel @ViewModelInject constructor(
 
                 }
             })
+    }
+
+    private fun getWeatherFromLocalStorage() {
+        Observable.fromCallable {
+            val listDBMovies = getMoviesFromDb()
+            Forecast("", listDBMovies, CityData())
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnNext { data: Forecast? ->
+
+                Log.i("Size of database", "")
+                _weatherMutableLiveData.value?.let { _ ->
+                    _weatherMutableLiveData.value = data
+                }
+            }
+            .subscribe()
+    }
+
+    private fun getMoviesFromDb(): List<ForecastData> {
+        return dbWeather.weatherDAO().getWeather().map {
+            dbMapper?.mapDBWeatherListToWeather(it) ?: ForecastData()
+        }
     }
 
     private fun insertWeatherIntoDatabase(forecast: Forecast) {
@@ -100,33 +132,11 @@ class ForecastViewModel @ViewModelInject constructor(
             .subscribe {
                 Log.d(
                     "Hoce spremiti vijesti",
-                    "Inserted ${forecast.forecastList.size} forecast data from API into DB..."
+                    "Inserted ${forecast.forecastList.size} movies from API in DB..."
                 )
             }
     }
 
-    fun getWeatherFromLocalStorage() {
-        Observable.fromCallable {
-            val listDBMovies = getForecastFromDB()
-            Forecast("", listDBMovies, CityData())
-        }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext { data: Forecast? ->
-
-                Log.i("Size of database", "")
-                _forecastMutableLiveData.value?.let { _ ->
-                    _forecastMutableLiveData.value = data
-                }
-            }
-            .subscribe()
-    }
-
-    private fun getForecastFromDB(): List<ForecastData> {
-        return dbWeather.weatherDAO().getWeather().map {
-            dbMapper?.mapDBWeatherListToWeather(it) ?: ForecastData()
-        }
-    }
 
 
     override fun onCleared() {

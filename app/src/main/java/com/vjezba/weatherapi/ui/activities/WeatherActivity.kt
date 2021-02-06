@@ -50,6 +50,7 @@ class WeatherActivity : BaseActivity(R.id.no_internet_layout) {
             val intent = Intent(this, ForecastActivity::class.java)
             intent.putExtra("cityName", cityName)
             startActivity(intent)
+            finish()
         }
     }
 

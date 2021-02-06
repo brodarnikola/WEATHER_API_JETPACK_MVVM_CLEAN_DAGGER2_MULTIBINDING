@@ -36,6 +36,8 @@
             android:name="com.vjezba.weatherapi.ui.activities.WeatherActivity" />
         <activity
             android:name="com.vjezba.weatherapi.ui.activities.ForecastActivity" />
+        <activity
+            android:name="com.vjezba.weatherapi.ui.activities.ForecastDatabaseActivity" />
 
     </application>
 

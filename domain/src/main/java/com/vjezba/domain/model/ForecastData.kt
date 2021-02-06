@@ -7,7 +7,7 @@ data class ForecastData(
 
     val main: ForecastMain = ForecastMain(),
 
-    val forecast: List<ForecastDescription> = listOf(),
+    val weather: List<ForecastDescription> = listOf(),
 
     val wind: ForecastWind = ForecastWind(),
 

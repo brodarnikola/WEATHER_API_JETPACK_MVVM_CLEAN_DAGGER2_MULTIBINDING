@@ -11,8 +11,7 @@ import com.vjezba.domain.model.ForecastData
 import kotlinx.android.synthetic.main.weather_list.view.*
 
 class WeatherAdapter(
-    var forecastResultList: MutableList<ForecastData>,
-    val weatherResultClickListener: (Long) -> Unit
+    var forecastResultList: MutableList<ForecastData>
 ) : RecyclerView.Adapter<WeatherAdapter.ViewHolder>() {
 
     private var isLoaderVisible = false
@@ -36,20 +35,8 @@ class WeatherAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
         holder as WeatherViewHolder
         holder.bindItem( holder, forecastResultList[position] )
-//        val viewType = forecastResultList[position]
-//        when (viewType.showProgressBar) {
-//            true -> {
-//                holder as ProgressHolder
-//            }
-//            else -> {
-//
-//                holder as WeatherViewHolder
-//                holder.bindItem( holder, forecastResultList[position] )
-//            }
-//        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -73,7 +60,6 @@ class WeatherAdapter(
     }
 
     inner class WeatherViewHolder(itemView: View) : ViewHolder(itemView) {
-        val layoutParent: ConstraintLayout = itemView.parentLayout
 
         val tvTemp: TextView = itemView.tvTemp
         val tvMax: TextView = itemView.tvMax
@@ -95,17 +81,14 @@ class WeatherAdapter(
             tvMax.text = "Temp max: " + item.main.tempMax
             tvFeelsLike.text = "Feels like: " + item.main.feelsLike
             tvWind.text = "Wind Speed: " + item.wind.speed
-            if( item.forecast.isNotEmpty() ) {
+            if( item.weather.isNotEmpty() ) {
                 tvDescription.visibility = View.VISIBLE
-                tvDescription.text = "Description: " + item.forecast[0].description
+                tvDescription.text = "Description: " + item.weather[0].description
             }
             else
                 tvDescription.visibility = View.GONE
             tvDate.text = "Date and time: " + item.dateAndTime
 
-            layoutParent.setOnClickListener {
-                //item.id?.let { it -> weatherResultClickListener(it) }
-            }
         }
     }
 
@@ -113,22 +96,6 @@ class WeatherAdapter(
         return forecastResultList.size
     }
 
-
-    fun addLoading() {
-//        isLoaderVisible = true
-//        val deliverParcel = ForecastData()
-//        deliverParcel.showProgressBar = true
-//        forecastResultList.add(deliverParcel)
-//        notifyItemInserted(forecastResultList.size - 1)
-    }
-
-    fun removeLoading() {
-//        isLoaderVisible = false
-//        val position: Int = forecastResultList.size - 1
-//        val item = forecastResultList[position]
-//        forecastResultList.removeAt(position)
-//        notifyItemRemoved(position)
-    }
 
     fun updateDevices(updatedDevices: MutableList<ForecastData>) {
         forecastResultList.addAll(updatedDevices)

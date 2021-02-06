@@ -7,7 +7,7 @@ data class ApiForecastData(
 
     val main: ApiForecastMain = ApiForecastMain(),
 
-    val forecast: List<ApiForecastDescription> = listOf(),
+    val weather: List<ApiForecastDescription> = listOf(),
 
     val wind: ApiForecastWind = ApiForecastWind(),
 

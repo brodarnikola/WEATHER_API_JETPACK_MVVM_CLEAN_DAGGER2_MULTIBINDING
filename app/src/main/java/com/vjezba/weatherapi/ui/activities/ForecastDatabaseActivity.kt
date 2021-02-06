@@ -15,7 +15,7 @@ import com.vjezba.weatherapi.viewmodels.ForecastViewModel
 import kotlinx.android.synthetic.main.activity_forecast.*
 
 
-class ForecastActivity : BaseActivity(R.id.no_internet_layout) {
+class ForecastDatabaseActivity : BaseActivity(R.id.no_internet_layout) {
 
     var cityName = ""
 
@@ -27,7 +27,7 @@ class ForecastActivity : BaseActivity(R.id.no_internet_layout) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_forecast)
+        setContentView(R.layout.activity_forecast_database)
 
         cityName = intent.getStringExtra("cityName") ?: ""
     }
@@ -44,14 +44,14 @@ class ForecastActivity : BaseActivity(R.id.no_internet_layout) {
 
         initializeUi()
 
-        forecastViewModel.forecastList.observe(this@ForecastActivity, Observer { items ->
+        forecastViewModel.forecastList.observe(this@ForecastDatabaseActivity, Observer { items ->
             Log.d(ContentValues.TAG, "Data is: ${items.forecastList.joinToString { "-" }}")
             progressBar.visibility = View.GONE
 
             weatherAdapter.updateDevices(items.forecastList.toMutableList())
         })
 
-        forecastViewModel.getForecastFromNetwork(cityName)
+        forecastViewModel.getWeatherFromLocalStorage()
     }
 
     private fun initializeUi() {
@@ -63,17 +63,11 @@ class ForecastActivity : BaseActivity(R.id.no_internet_layout) {
             adapter = weatherAdapter
         }
         forecast_list.adapter = weatherAdapter
-
-        btnRoomOldWeatherData.setOnClickListener {
-            val intent = Intent(this, ForecastDatabaseActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
-        val intent = Intent( this, WeatherActivity::class.java )
+        val intent = Intent( this, ForecastActivity::class.java )
         startActivity(intent)
         finish()
     }

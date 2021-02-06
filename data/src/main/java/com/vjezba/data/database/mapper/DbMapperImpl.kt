@@ -59,7 +59,7 @@ class DbMapperImpl : DbMapper {
                     with(it) {
                         ForecastData(
                             ForecastMain(it.main.temp, it.main.feelsLike, it.main.tempMax),
-                            it.forecast.map {
+                            it.weather.map {
                                 ForecastDescription(it.description)
                             },
                             ForecastWind(it.wind.speed),
@@ -74,11 +74,15 @@ class DbMapperImpl : DbMapper {
 
     override fun mapDomainWeatherToDbWeather(forecast: Forecast): List<DBWeather> {
         return forecast.forecastList.map {
+            val descriptionData =  if( it.weather.isNotEmpty() )
+                it.weather[0].description
+            else
+                ""
             DBWeather(
                 it.main.temp,
                 it.main.feelsLike,
                 it.main.tempMax,
-                it.forecast[0].description,
+                descriptionData,
                 it.wind.speed,
                 it.dateAndTime
             )
