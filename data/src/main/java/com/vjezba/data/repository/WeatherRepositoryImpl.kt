@@ -23,6 +23,7 @@ import com.vjezba.data.networking.WeatherRepositoryApi
 import com.vjezba.domain.model.*
 import com.vjezba.domain.repository.WeatherRepository
 import io.reactivex.Flowable
+import java.net.URLEncoder
 
 /**
  * RepositoryResponseApi module for handling data operations.
@@ -39,9 +40,19 @@ class WeatherRepositoryImpl constructor(
         val appId = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
         val result = service.getWeather(latitude, longitude, appId)
 
-        Log.i("Da li ce uci", "AAAA Hoce li svakih 10 sekundi skinuti nove podatke")
         //Observable.concatArrayEager(newsResult, observableFromDB)
 
+        val correctResult = result.map { dbMapper?.mapApiWeatherToDomainWeather(it)!! }
+
+        return correctResult
+    }
+
+    override fun getWeatherDataByCityName(cityName: String): Flowable<Weather> {
+
+        val appId = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
+        val cityNameUrlEncoded = URLEncoder.encode(cityName, "utf-8")
+
+        val result = service.getWeatherByCityName(cityNameUrlEncoded, appId)
         val correctResult = result.map { dbMapper?.mapApiWeatherToDomainWeather(it)!! }
 
         return correctResult
@@ -51,17 +62,13 @@ class WeatherRepositoryImpl constructor(
         val appId = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
         val result = service.getForecast(cityName, appId)
 
-        Log.i("Da li ce uci", "AAAA Hoce li svakih 10 sekundi skinuti nove podatke")
-        //Observable.concatArrayEager(newsResult, observableFromDB)
-
         val correctResult = result.map { dbMapper?.mapApiForecastToDomainForecast(it)!! }
 
         return correctResult
     }
 
-//    override fun getLastLocationListener(cityName: String): Flowable<Forecast> {
-//
-//    }
+
+
 
     // example, practice of rxjava2
     override fun getMovies(page: Int): Flowable<Movies> {

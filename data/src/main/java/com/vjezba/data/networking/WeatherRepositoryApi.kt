@@ -34,6 +34,9 @@ interface WeatherRepositoryApi {
     @Headers("Content-Type: application/json")
     fun getWeather( @Query("lat") latitude: Double, @Query("lon") longitude: Double, @Query("appId") appId: String ): Flowable<ApiWeather>
 
+    @GET("weather")
+    @Headers("Content-Type: application/json")
+    fun getWeatherByCityName( @Query("q") cityName: String, @Query("appId") appId: String ): Flowable<ApiWeather>
 
     @GET("forecast")
     @Headers("Content-Type: application/json")
