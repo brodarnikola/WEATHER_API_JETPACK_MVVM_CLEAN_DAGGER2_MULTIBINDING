@@ -71,6 +71,10 @@ class WeatherFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
+        stopLocationUpdates()
+    }
+
+    private fun stopLocationUpdates() {
         fusedLocationClient?.removeLocationUpdates(locationCallback)
     }
 
