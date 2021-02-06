@@ -32,8 +32,12 @@
             android:layout_height="?attr/actionBarSize"
             android:text="WEATHER"
             android:textSize="22sp"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:textColor="@color/colorWhite"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:paddingRight="?attr/actionBarSize"
+            android:paddingLeft="?attr/actionBarSize"/>
 
         </RelativeLayout>
 

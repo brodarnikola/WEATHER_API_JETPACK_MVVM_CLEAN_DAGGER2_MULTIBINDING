@@ -9,42 +9,35 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.vjezba.weatherapi.databinding.FragmentForecastBinding
+import com.vjezba.weatherapi.databinding.FragmentForecastDatabaseBinding
 import com.vjezba.weatherapi.ui.adapters.ForecastAdapter
+import com.vjezba.weatherapi.ui.adapters.ForecastDatabaseAdapter
 import com.vjezba.weatherapi.viewmodels.ForecastViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_weather.*
 import kotlinx.android.synthetic.main.fragment_forecast.*
 
 @AndroidEntryPoint
-class ForecastFragment : Fragment() {
-
-    var cityName = ""
+class ForecastDatabaseFragment : Fragment() {
 
     val forecastViewModel: ForecastViewModel by viewModels()
 
-    private lateinit var forecastAdapter: ForecastAdapter
+    private lateinit var forecastDatabaseAdapter: ForecastDatabaseAdapter
     var weatherLayoutManager: LinearLayoutManager? = null
 
-    lateinit var binding: FragmentForecastBinding
-
-    private val args: ForecastFragmentArgs by navArgs()
+    lateinit var binding: FragmentForecastDatabaseBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
 
-        binding = FragmentForecastBinding.inflate(inflater, container, false)
+        binding = FragmentForecastDatabaseBinding.inflate(inflater, container, false)
         context ?: return binding.root
 
-        cityName = args.cityName
-
-        activity?.tvToolbarTitle?.text = "FORECAST"
+        activity?.tvToolbarTitle?.text = "FORECAST DATABASE ROOM "
 
         return binding.root
     }
@@ -54,33 +47,27 @@ class ForecastFragment : Fragment() {
 
         initializeUi()
 
-        forecastViewModel.forecastList.observe(this@ForecastFragment, Observer { items ->
+        forecastViewModel.forecastList.observe(this@ForecastDatabaseFragment, Observer { items ->
             Log.d(ContentValues.TAG, "Data is: ${items.forecastList.joinToString { "-" }}")
             progressBar.visibility = View.GONE
 
-            forecastAdapter.updateDevices(items.forecastList.toMutableList())
+            forecastDatabaseAdapter.updateDevices(items.forecastList.toMutableList())
         })
 
-        forecastViewModel.getForecastFromNetwork(cityName)
+        forecastViewModel.getWeatherFromLocalStorage()
     }
 
     private fun initializeUi() {
 
         weatherLayoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
 
-        forecastAdapter = ForecastAdapter( mutableListOf() )
+        forecastDatabaseAdapter = ForecastDatabaseAdapter( mutableListOf() )
 
-        binding.forecastList.apply {
+        forecast_list.apply {
             layoutManager = weatherLayoutManager
-            adapter = forecastAdapter
+            adapter = forecastDatabaseAdapter
         }
-        binding.forecastList.adapter = forecastAdapter
-
-        binding.btnRoomOldWeatherData.setOnClickListener {
-            val direction =
-                ForecastFragmentDirections.forecastFragmentToForecastDatabaseFragment()
-            findNavController().navigate(direction)
-        }
+        forecast_list.adapter = forecastDatabaseAdapter
     }
 
 }
