@@ -16,7 +16,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
 
-class GpsUtils  (context: Context)  {
+class LocationGpsMonitor  (context: Context)  {
 
     private var lastResult: Boolean? = null
     private var lastCheck: Long = 0L

@@ -1,14 +1,10 @@
 package com.vjezba.weatherapi
 
-import android.app.Activity
 import android.app.Application
-import com.vjezba.weatherapi.network.ConnectivityChangedEvent
-import com.vjezba.weatherapi.network.ConnectivityMonitor
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
+import com.vjezba.weatherapi.connectivity.network.ConnectivityChangedEvent
+import com.vjezba.weatherapi.connectivity.network.ConnectivityMonitor
 import dagger.hilt.android.HiltAndroidApp
 import org.greenrobot.eventbus.EventBus
-import javax.inject.Inject
 
 @HiltAndroidApp
 class App : Application() {
@@ -36,7 +32,11 @@ class App : Application() {
     //instance = this
 
     ConnectivityMonitor.initialize(this) { available ->
-        eventBus.post(ConnectivityChangedEvent(available))
+        eventBus.post(
+            ConnectivityChangedEvent(
+                available
+            )
+        )
     }
 
   }

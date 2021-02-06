@@ -7,10 +7,9 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.vjezba.data.networking.ConnectivityUtil
 import com.vjezba.weatherapi.App
-import com.vjezba.weatherapi.R
-import com.vjezba.weatherapi.network.ConnectivityChangedEvent
+import com.vjezba.weatherapi.connectivity.network.ConnectivityChangedEvent
 import dagger.hilt.android.AndroidEntryPoint
-import hr.sil.android.zwicktablet.gps.GpsUtils
+import hr.sil.android.zwicktablet.gps.LocationGpsMonitor
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
@@ -48,7 +47,7 @@ open class BaseActivity(noWifiViewId: Int = 0, noLocationGpsViewId: Int = 0) : A
         super.onResume()
 
         if (locationGPSListenerKey == null) {
-            locationGPSListenerKey = GpsUtils(this).addListener { available ->
+            locationGPSListenerKey = LocationGpsMonitor(this).addListener { available ->
                 uiHandler.post { onGpsLocationServiceStateUpdated(available) }
             }
         }
@@ -61,7 +60,7 @@ open class BaseActivity(noWifiViewId: Int = 0, noLocationGpsViewId: Int = 0) : A
     override fun onPause() {
         super.onPause()
         App.ref.eventBus.unregister(this)
-        locationGPSListenerKey?.let { GpsUtils(this).removeListener(it) }
+        locationGPSListenerKey?.let { LocationGpsMonitor(this).removeListener(it) }
         locationGPSListenerKey = null
     }
 

@@ -1,4 +1,4 @@
-package com.vjezba.weatherapi.network
+package com.vjezba.weatherapi.connectivity.network
 
 import android.annotation.TargetApi
 import android.content.BroadcastReceiver
@@ -8,8 +8,6 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Network
 import android.os.Build
-import com.vjezba.weatherapi.App
-import com.vjezba.weatherapi.ui.activities.BaseActivity
 
 
 internal sealed class ConnectivityMonitor(protected val connectivityManager: ConnectivityManager) {
@@ -78,9 +76,14 @@ internal sealed class ConnectivityMonitor(protected val connectivityManager: Con
         private fun create(context: Context): ConnectivityMonitor {
             val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                NougatConnectivityMonitor(connectivityManager)
+                NougatConnectivityMonitor(
+                    connectivityManager
+                )
             } else {
-                LegacyConnectivityMonitor(context, connectivityManager)
+                LegacyConnectivityMonitor(
+                    context,
+                    connectivityManager
+                )
             }
         }
 
@@ -89,7 +92,9 @@ internal sealed class ConnectivityMonitor(protected val connectivityManager: Con
         private var stateChangeListener: (available: Boolean) -> Unit = { }
         private fun onConnectionStateChanged(available: Boolean) {
             isConnectionAvailable = available
-            stateChangeListener(available)
+            stateChangeListener(
+                available
+            )
         }
 
         fun isAvailable(): Boolean {
@@ -98,9 +103,14 @@ internal sealed class ConnectivityMonitor(protected val connectivityManager: Con
 
         fun initialize(context: Context, connectionStateChanged: (available: Boolean) -> Unit) {
             if (!this::monitor.isInitialized) {
-                monitor = create(context)
+                monitor =
+                    create(
+                        context
+                    )
                 stateChangeListener = connectionStateChanged
-                monitor.startListening(::onConnectionStateChanged)
+                monitor.startListening(
+                    Companion::onConnectionStateChanged
+                )
             }
         }
     }

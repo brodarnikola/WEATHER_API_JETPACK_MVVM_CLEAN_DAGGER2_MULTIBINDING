@@ -7,12 +7,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.AppComponentFactory
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.vjezba.weatherapi.R
-import com.vjezba.weatherapi.network.ConnectivityMonitor
-import hr.sil.android.zwicktablet.gps.GpsUtils
+import com.vjezba.weatherapi.connectivity.network.ConnectivityMonitor
+import hr.sil.android.zwicktablet.gps.LocationGpsMonitor
 import kotlinx.android.synthetic.main.activity_splash.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -61,7 +60,7 @@ class SplashActivity : AppCompatActivity() {
 
     private fun startApp() {
 
-        if (ConnectivityMonitor.isAvailable() && GpsUtils(this).turnGPSOn()) {
+        if (ConnectivityMonitor.isAvailable() && LocationGpsMonitor(this).turnGPSOn()) {
             val intent = Intent(this@SplashActivity, WeatherActivity::class.java)
             startActivity(intent)
             finish()
@@ -72,7 +71,7 @@ class SplashActivity : AppCompatActivity() {
             btnRetry.setOnClickListener {
                 checkIfNetworkAndGpsAreTurnedOn()
             }
-        } else if (!GpsUtils(this).turnGPSOn()) {
+        } else if (!LocationGpsMonitor(this).turnGPSOn()) {
             tvTurnOn.visibility = View.VISIBLE
             tvTurnOn.text = "Please turn on gps, location service"
             btnRetry.visibility = View.VISIBLE
@@ -85,7 +84,7 @@ class SplashActivity : AppCompatActivity() {
     private fun checkIfNetworkAndGpsAreTurnedOn() {
         if (!ConnectivityMonitor.isAvailable()) {
             tvTurnOn.text = "Please turn on your wifi or mobile data"
-        } else if (!GpsUtils(this).turnGPSOn()) {
+        } else if (!LocationGpsMonitor(this).turnGPSOn()) {
             tvTurnOn.text = "Please turn on gps, location service"
         } else {
             val intent = Intent(this@SplashActivity, WeatherActivity::class.java)
