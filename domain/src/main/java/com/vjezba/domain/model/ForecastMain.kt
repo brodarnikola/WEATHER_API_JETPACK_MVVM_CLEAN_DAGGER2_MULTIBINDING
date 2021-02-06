@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ForecastMain(
 
-    val temp: String = "",
+    var temp: String = "",
 
     @SerializedName("feels_like")
     val feelsLike: String = "",
