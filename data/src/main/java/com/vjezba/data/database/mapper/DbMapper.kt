@@ -16,20 +16,4 @@ interface DbMapper {
 
     fun mapDBWeatherListToWeather(weather: DBWeather): ForecastData
 
-
-    // movie
-    fun mapApiMoviesToDomainMovies(apiNews: ApiMovies): Movies
-
-
-
-    fun mapApiMovieDetailsToDomainMovieDetails(apiMovieDetails: ApiMovieDetails): MovieDetails
-
-    fun mapDomainMoviesToDbMovies(newsList: Movies): List<DBWeather>
-
-    fun mapDBMoviesListToMovies(articlesList: DBWeather): MovieResult
-
-
-    fun mapApiTrailersToDomainTrailers(apiTrailers: ApiTrailers): Trailer
-
-    fun mapApiActorsToDomainActors(apiActors: ApiActors): Actors
 }

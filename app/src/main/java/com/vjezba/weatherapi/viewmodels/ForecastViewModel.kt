@@ -107,8 +107,8 @@ class ForecastViewModel @ViewModelInject constructor(
 
     fun getWeatherFromLocalStorage() {
         Observable.fromCallable {
-            val listDBMovies = getForecastFromDB()
-            Forecast("", listDBMovies, CityData())
+            val listForecast = getForecastFromDB()
+            Forecast("", listForecast, CityData())
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

@@ -27,14 +27,4 @@ interface WeatherRepository {
     fun getWeatherDataByCityName(cityName: String) : Flowable<Weather>
 
     fun getForecastData(cityName: String) : Flowable<Forecast>
-    //fun getLastLocationListener(cityName: String) : Flowable<Forecast>
-
-
-    fun getMovies(page: Int) : Flowable<Movies>
-
-    fun getMoviesDetails(movieId: Long) : Flowable<MovieDetails>
-
-    fun getTrailers(movieId: Long) : Flowable<Trailer>
-
-    fun getActors(movieId: Long) : Flowable<Actors>
 }

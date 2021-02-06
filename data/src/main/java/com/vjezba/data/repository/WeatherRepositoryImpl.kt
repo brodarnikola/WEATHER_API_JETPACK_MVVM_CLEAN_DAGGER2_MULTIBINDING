@@ -67,46 +67,4 @@ class WeatherRepositoryImpl constructor(
         return correctResult
     }
 
-
-
-
-    // example, practice of rxjava2
-    override fun getMovies(page: Int): Flowable<Movies> {
-        val moviesResult = service.searchMovies(page)
-
-        Log.i("Da li ce uci", "AAAA Hoce li svakih 10 sekundi skinuti nove podatke")
-        //Observable.concatArrayEager(newsResult, observableFromDB)
-
-        val correctMoviesResult = moviesResult.map { dbMapper?.mapApiMoviesToDomainMovies(it)!! }
-
-        return correctMoviesResult
-    }
-
-    override fun getMoviesDetails( movieId: Long ): Flowable<MovieDetails> {
-
-        val moviesResult = service.getDetailsMovie(movieId)
-
-        val correctMoviesResult = moviesResult.map { dbMapper?.mapApiMovieDetailsToDomainMovieDetails(it)!! }
-
-        return correctMoviesResult
-    }
-
-    override fun getTrailers(movieId: Long): Flowable<Trailer> {
-
-        val moviesResult = service.getTrailers(movieId)
-
-        val correctMoviesResult = moviesResult.map { dbMapper?.mapApiTrailersToDomainTrailers(it)!! }
-
-        return correctMoviesResult
-    }
-
-    override fun getActors(movieId: Long): Flowable<Actors> {
-
-        val moviesResult = service.getActors(movieId)
-
-        val correctMoviesResult = moviesResult.map { dbMapper?.mapApiActorsToDomainActors(it)!! }
-
-        return correctMoviesResult
-    }
-
 }

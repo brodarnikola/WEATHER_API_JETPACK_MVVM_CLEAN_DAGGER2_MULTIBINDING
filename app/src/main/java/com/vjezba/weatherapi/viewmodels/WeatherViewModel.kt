@@ -37,9 +37,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.delay
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 class WeatherViewModel @ViewModelInject constructor(
@@ -128,25 +126,6 @@ class WeatherViewModel @ViewModelInject constructor(
             })
     }
 
-    private fun getWeatherFromLocalStorage() {
-//        Observable.fromCallable {
-//            val listDBMovies = getMoviesFromDb()
-//            Forecast("", listDBMovies, CityData())
-//        }
-//            .subscribeOn(Schedulers.io())
-//            //.flatMap { source: List<Articles> -> Observable.fromIterable(source) } // this flatMap is good if you want to iterate, go through list of objects.
-//            //.flatMap { source: News? -> Observable.fromArray(source) or  } // .. iterate through each item
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .doOnNext { data: Forecast? ->
-//
-//                Log.i("Size of database", "")
-//                _weatherMutableLiveData.value?.let { _ ->
-//                    _weatherMutableLiveData.value = data
-//                }
-//            }
-//            .subscribe()
-    }
-
     private val _lastLocationMutableLiveData = MutableLiveData<Address>().apply {
         value = Address(Locale("EN"))
     }
@@ -165,55 +144,6 @@ class WeatherViewModel @ViewModelInject constructor(
                 addAddressValueToTextView( context, currentLatLng)
             }
         }
-
-//        Observable.fromCallable {
-//
-//            var address = Address(Locale("en"))
-//            fusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
-//                if (location != null) {
-//                    val currentLatLng = LatLng(location.latitude, location.longitude)
-//                    address = addAddressValueToTextView(context, currentLatLng)
-//                }
-//            }
-//            address
-//
-//            //val address = weatherRepository.getLastLocationListener(context, fusedLocationProviderClient, callback = Handler.Callback,)
-//            //address
-//            //val listDBMovies = getMoviesFromDb()
-//            //Forecast("", listDBMovies, CityData())
-//        }
-//            .subscribeOn(Schedulers.io())
-//            //.flatMap { source: List<Articles> -> Observable.fromIterable(source) } // this flatMap is good if you want to iterate, go through list of objects.
-//            //.flatMap { source: News? -> Observable.fromArray(source) or  } // .. iterate through each item
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .doOnNext { data: Address? ->
-//
-//                Log.i("Size of database", "data is: ${data?.getAddressLine(0)}")
-//                _lastLocationMutableLiveData.value?.let { _ ->
-//                    _lastLocationMutableLiveData.value = data
-//                }
-//            }
-//            .subscribe()
-
-        //weatherRepository.getLastLocationListener(context, currentLatLng)
-
-//        viewModelScope.launch(Dispatchers.IO) {
-//            val locale = Locale( getSystemLanguage(context) )
-//            val gcd = Geocoder(context, locale)
-//
-//            var addresses: MutableList<Address> = mutableListOf()
-//            try {
-//                addresses =
-//                    gcd.getFromLocation(currentLatLng.latitude, currentLatLng.longitude, 1)
-//            } catch (e: Exception) {
-//                Log.i( "ErrorTag","Exception is: ${e}")
-//            }
-//            withContext(Dispatchers.Main) {
-//                if (addresses != null && addresses.size > 0 && addresses[0] != null
-//                    && addresses[0].getAddressLine(0) != null )
-//                    _lastLocationMutableLiveData.value = addresses[0]
-//            }
-//        }
     }
 
     private fun addAddressValueToTextView(context: Context, currentLatLng: LatLng) {

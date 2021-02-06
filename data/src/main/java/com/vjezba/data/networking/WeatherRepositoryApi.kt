@@ -43,26 +43,4 @@ interface WeatherRepositoryApi {
     fun getForecast( @Query("q") cityName: String, @Query("appId") appId: String ): Flowable<ApiForecast>
 
 
-
-
-
-    @GET("discover/movie?api_key=fea6a69ff7391818240b67fa3bb83786&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page")
-    @Headers("Content-Type: application/json")
-    fun searchMovies( @Query("page") page: Int ): Flowable<ApiMovies>
-
-    @GET("movie/{movieId}?api_key=fea6a69ff7391818240b67fa3bb83786&language=en-US")
-    @Headers("Content-Type: application/json")
-    fun getDetailsMovie( @Path("movieId") movieId: Long ): Flowable<ApiMovieDetails>
-
-    @GET("movie/{movieId}/videos?api_key=fea6a69ff7391818240b67fa3bb83786&language=en-US")
-    @Headers("Content-Type: application/json")
-    fun getTrailers( @Path("movieId") movieId: Long ): Flowable<ApiTrailers>
-
-    @GET("movie/{movieId}/credits?api_key=fea6a69ff7391818240b67fa3bb83786&language=en-US")
-    @Headers("Content-Type: application/json")
-    fun getActors( @Path("movieId") movieId: Long ): Flowable<ApiActors>
-
-
-
-
 }
