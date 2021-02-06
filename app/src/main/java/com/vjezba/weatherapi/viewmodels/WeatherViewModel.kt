@@ -52,7 +52,7 @@ class WeatherViewModel @ViewModelInject constructor(
         value = Weather()
     }
 
-    val forecastList: LiveData<Weather> = _weatherMutableLiveData
+    val weatherList: LiveData<Weather> = _weatherMutableLiveData
 
     private fun getWeatherFromNetwork(latitude: Double, longitude: Double) {
         weatherRepository.getWeatherData(latitude, longitude)

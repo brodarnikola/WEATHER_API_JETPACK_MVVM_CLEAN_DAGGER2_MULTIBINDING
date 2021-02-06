@@ -46,6 +46,10 @@
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_forecast">
 
+        <argument
+            android:name="cityName"
+            app:argType="string" />
+
     </fragment>
 
 

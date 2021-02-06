@@ -66,6 +66,8 @@ class ForecastFragment : Fragment() {
 
     private fun initializeUi() {
 
+        tvForecast.text = "City name: ${cityName}. Forecast for next 5 days: "
+
         weatherLayoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
 
         forecastAdapter = ForecastAdapter( mutableListOf() )
@@ -78,7 +80,7 @@ class ForecastFragment : Fragment() {
 
         binding.btnRoomOldWeatherData.setOnClickListener {
             val direction =
-                ForecastFragmentDirections.forecastFragmentToForecastDatabaseFragment()
+                ForecastFragmentDirections.forecastFragmentToForecastDatabaseFragment( cityName = cityName )
             findNavController().navigate(direction)
         }
     }
