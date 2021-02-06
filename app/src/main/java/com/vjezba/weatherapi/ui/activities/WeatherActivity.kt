@@ -1,29 +1,25 @@
 package com.vjezba.weatherapi.ui.activities
 
-import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import androidx.activity.viewModels
-import androidx.lifecycle.Observer
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.vjezba.weatherapi.R
-import com.vjezba.weatherapi.viewmodels.WeatherViewModel
-import kotlinx.android.synthetic.main.activity_weather.*
 
 
 class WeatherActivity : BaseActivity(R.id.no_internet_layout) {
 
-    private var fusedLocationClient: FusedLocationProviderClient? = null
-
-    val weatherViewModel: WeatherViewModel by viewModels()
-
-    var cityName = ""
+    private lateinit var navController: NavController
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_weather)
+
+        setSupportActionBar(findViewById(R.id.toolbarWeather))
+        supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
     override fun onNetworkStateUpdated(available: Boolean) {
@@ -36,49 +32,14 @@ class WeatherActivity : BaseActivity(R.id.no_internet_layout) {
         super.onStart()
         viewLoaded = true
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        navController = findNavController(R.id.nav_host_fragment)
+        appBarConfiguration = AppBarConfiguration(navController.graph)
 
-        weatherViewModel.getLastLocationListener(this, fusedLocationClient)
-
-        setupLiveDataAndObservePattern()
-
-        setupClickListener()
+        setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
-    private fun setupClickListener() {
-        btnStartForecast.setOnClickListener {
-            val intent = Intent(this, ForecastActivity::class.java)
-            intent.putExtra("cityName", cityName)
-            startActivity(intent)
-            finish()
-        }
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
-
-    private fun setupLiveDataAndObservePattern() {
-
-        weatherViewModel.lastLocation.observe(this, Observer { address ->
-            tvCurrentAddress.text = "Current address: " + address.getAddressLine(0)
-            if( address.hasLatitude() && address.hasLongitude() )
-                tvLatLongitude.text = "Latitude: " + address.latitude + " Longitude: " + address.longitude
-        })
-
-        weatherViewModel.forecastList.observe(this@WeatherActivity, Observer { item ->
-            //Log.d(ContentValues.TAG, "Da li ce uci sim uuuuuu: ${items.result.joinToString { "-" }}")
-            progressBar.visibility = View.GONE
-            if( item.weather.isNotEmpty() ) {
-                tvDescription.visibility = View.VISIBLE
-                tvDescription.text = "Description: " + item.weather[0].description
-            }
-            else
-                tvDescription.visibility = View.GONE
-            tvTemp.text = "Temp: " + item.main.temp
-            tvMax.text = "Temp max: " + item.main.tempMax
-            tvFeelsLike.text = "Feels like: " + item.main.feelsLike
-            tvWind.text = "Wind Speed: " + item.wind.speed
-            cityName = item.name
-        })
-    }
-
-
 
 }

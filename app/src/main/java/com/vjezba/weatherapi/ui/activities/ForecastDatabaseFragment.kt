@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.lifecycle.Observer
@@ -11,11 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vjezba.weatherapi.R
 import com.vjezba.weatherapi.ui.adapters.WeatherAdapter
+import com.vjezba.weatherapi.ui.fragments.ForecastFragment
 import com.vjezba.weatherapi.viewmodels.ForecastViewModel
-import kotlinx.android.synthetic.main.activity_forecast.*
+import kotlinx.android.synthetic.main.fragment_forecast.*
 
 
-class ForecastDatabaseActivity : BaseActivity(R.id.no_internet_layout) {
+class ForecastDatabaseFragment : BaseActivity(R.id.no_internet_layout) {
 
     var cityName = ""
 
@@ -30,6 +32,11 @@ class ForecastDatabaseActivity : BaseActivity(R.id.no_internet_layout) {
         setContentView(R.layout.activity_forecast_database)
 
         cityName = intent.getStringExtra("cityName") ?: ""
+
+//        this.setSupportActionBar(toolbar)
+//        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+//        supportActionBar?.setDisplayShowHomeEnabled(true)
+//        supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
     override fun onNetworkStateUpdated(available: Boolean) {
@@ -44,7 +51,7 @@ class ForecastDatabaseActivity : BaseActivity(R.id.no_internet_layout) {
 
         initializeUi()
 
-        forecastViewModel.forecastList.observe(this@ForecastDatabaseActivity, Observer { items ->
+        forecastViewModel.forecastList.observe(this@ForecastDatabaseFragment, Observer { items ->
             Log.d(ContentValues.TAG, "Data is: ${items.forecastList.joinToString { "-" }}")
             progressBar.visibility = View.GONE
 
@@ -67,9 +74,23 @@ class ForecastDatabaseActivity : BaseActivity(R.id.no_internet_layout) {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        val intent = Intent( this, ForecastActivity::class.java )
+        val intent = Intent( this, ForecastFragment::class.java )
+        intent.putExtra("cityName", cityName)
         startActivity(intent)
         finish()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                val intent = Intent( this, ForecastFragment::class.java )
+                intent.putExtra("cityName", cityName)
+                startActivity(intent)
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
 }
