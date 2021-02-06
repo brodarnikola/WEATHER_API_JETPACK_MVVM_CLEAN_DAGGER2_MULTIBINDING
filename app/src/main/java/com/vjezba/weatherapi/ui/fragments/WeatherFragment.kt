@@ -116,10 +116,12 @@ class WeatherFragment : Fragment() {
         }
 
         binding.btnSearchWeatherByCityName.setOnClickListener {
-            it.isEnabled = false
-            it.alpha = 0.4f
-            searchNewCityData = true
-            weatherViewModel.getWeatherDataByCityName(etCityName.text.toString())
+            if( etCityName.text.toString() != "" ) {
+                it.isEnabled = false
+                it.alpha = 0.4f
+                searchNewCityData = true
+                weatherViewModel.getWeatherDataByCityName(etCityName.text.toString())
+            }
         }
     }
 

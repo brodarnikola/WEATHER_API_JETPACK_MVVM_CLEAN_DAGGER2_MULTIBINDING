@@ -9,7 +9,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.vjezba.weatherapi.R
 
 
-class WeatherActivity : BaseActivity(R.id.no_internet_layout) {
+class WeatherActivity : BaseActivity(R.id.no_internet_layout, R.id.no_gps_location_service_layout) {
 
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -24,6 +24,13 @@ class WeatherActivity : BaseActivity(R.id.no_internet_layout) {
 
     override fun onNetworkStateUpdated(available: Boolean) {
         super.onNetworkStateUpdated(available)
+        if( viewLoaded == true )
+            updateConnectivityUi()
+    }
+
+    override fun onGpsLocationServiceStateUpdated(available: Boolean) {
+        super.onGpsLocationServiceStateUpdated(available)
+        locationGPSAvailable = available
         if( viewLoaded == true )
             updateConnectivityUi()
     }
