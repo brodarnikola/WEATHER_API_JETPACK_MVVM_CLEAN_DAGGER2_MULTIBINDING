@@ -1,7 +1,9 @@
 package com.vjezba.weatherapi.ui.fragments
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.vjezba.domain.model.Weather
 import com.vjezba.weatherapi.R
 import com.vjezba.weatherapi.databinding.FragmentWeatherBinding
@@ -29,12 +30,13 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class WeatherFragment : Fragment() {
 
-    private var fusedLocationClient: FusedLocationProviderClient? = null
-
     val weatherViewModel: WeatherViewModel by viewModels()
 
     var cityName = ""
     var searchNewCityData = false
+
+    private lateinit var locationCallback: LocationCallback
+    private var fusedLocationClient: FusedLocationProviderClient? = null
 
     lateinit var binding: FragmentWeatherBinding
 
@@ -52,16 +54,56 @@ class WeatherFragment : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+        super.onResume()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        createLocationRequest()
 
-        weatherViewModel.getLastLocationListener(requireContext(), fusedLocationClient)
-
-        setupLiveDataAndObservePattern()
+        lifecycleScope.launch(Dispatchers.Main) {
+            delay(4000)
+            setupLiveDataAndObservePattern()
+        }
+        //weatherViewModel.getLastLocationListener(requireContext(), fusedLocationClient)
 
         setupClickListener()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopLocationUpdates()
+    }
+
+    private fun stopLocationUpdates() {
+        fusedLocationClient?.removeLocationUpdates(locationCallback)
+    }
+
+    @SuppressLint("MissingPermission")
+    fun createLocationRequest() {
+        val locationRequest = LocationRequest.create().apply {
+            interval = 10000
+            fastestInterval = 5000
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+                for (location in locationResult.locations){
+                    // Update UI with location data
+                    // ...
+                    if(location != null) {
+                        Log.i("Tag", "New location received: ${location}")
+                        weatherViewModel.getLastLocationListener(requireContext(), fusedLocationClient)
+                        fusedLocationClient?.removeLocationUpdates(this)
+                    }
+                }
+            }
+        }
+
+        fusedLocationClient?.requestLocationUpdates(locationRequest,
+            locationCallback,
+            Looper.getMainLooper())
     }
 
     private fun setupClickListener() {
@@ -83,7 +125,7 @@ class WeatherFragment : Fragment() {
 
     private fun setupLiveDataAndObservePattern() {
 
-        weatherViewModel.lastLocation.observe(this, Observer { address ->
+        weatherViewModel.lastLocation.observe(viewLifecycleOwner, Observer { address ->
 
             clDisplayDataByCurrentLocation.visibility = View.GONE
             rlSearchDataByCurrentLocation.visibility = View.VISIBLE
@@ -94,23 +136,15 @@ class WeatherFragment : Fragment() {
                     "Latitude: " + address.latitude + " Longitude: " + address.longitude
         })
 
-        weatherViewModel.forecastList.observe(this@WeatherFragment, Observer { item ->
+        weatherViewModel.weatherList.observe(viewLifecycleOwner, Observer { item ->
 
             Log.d(ContentValues.TAG, "Weather data: ${item.weather.joinToString { "-" }}")
+            rlSearchDataByCurrentLocation.visibility = View.GONE
+            clDisplayDataByCurrentLocation.visibility = View.VISIBLE
 
             if( searchNewCityData ) {
                 binding.btnSearchWeatherByCityName.isEnabled = true
                 binding.btnSearchWeatherByCityName.alpha = 1.0f
-                if( item.main.temp == "" && item.name == "" ) {
-                    notFoundAnyCityWithInsertedText()
-                }
-                else {
-                    setCurrentCityLocation(item)
-                }
-            }
-            else {
-                clDisplayDataByCurrentLocation.visibility = View.VISIBLE
-                rlSearchDataByCurrentLocation.visibility = View.GONE
             }
 
             if( item.main.temp == "" && item.name == "" ) {
@@ -130,7 +164,7 @@ class WeatherFragment : Fragment() {
             )
         )
         if( searchNewCityData ) {
-            tvCurrentAddress.text = "Searched address in edittext: " + etCityName.text.toString()
+            tvCurrentAddress.text = "Searched city name is: " + etCityName.text.toString()
         }
 
         if (item.weather.isNotEmpty()) {

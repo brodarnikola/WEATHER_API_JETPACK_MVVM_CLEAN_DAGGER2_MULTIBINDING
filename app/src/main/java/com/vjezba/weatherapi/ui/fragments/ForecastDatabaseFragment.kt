@@ -9,15 +9,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vjezba.weatherapi.databinding.FragmentForecastDatabaseBinding
-import com.vjezba.weatherapi.ui.adapters.ForecastAdapter
 import com.vjezba.weatherapi.ui.adapters.ForecastDatabaseAdapter
 import com.vjezba.weatherapi.viewmodels.ForecastViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_weather.*
-import kotlinx.android.synthetic.main.fragment_forecast.*
+import kotlinx.android.synthetic.main.fragment_forecast_database.*
 
 @AndroidEntryPoint
 class ForecastDatabaseFragment : Fragment() {
@@ -28,6 +28,8 @@ class ForecastDatabaseFragment : Fragment() {
     var weatherLayoutManager: LinearLayoutManager? = null
 
     lateinit var binding: FragmentForecastDatabaseBinding
+
+    private val args: ForecastDatabaseFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,6 +60,8 @@ class ForecastDatabaseFragment : Fragment() {
     }
 
     private fun initializeUi() {
+
+        tvForecast.text = "City name: ${args.cityName}. Forecast from room, database: "
 
         weatherLayoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
 
