@@ -19,6 +19,14 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
 
+        <action
+            android:id="@+id/weather_fragment_to_youtube_fragment"
+            app:destination="@id/youtube_fragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
     </fragment>
 
     <fragment
@@ -49,6 +57,14 @@
         <argument
             android:name="cityName"
             app:argType="string" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/youtube_fragment"
+        android:name="com.vjezba.weatherapi.ui.fragments.YoutubeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_youtube">
 
     </fragment>
 

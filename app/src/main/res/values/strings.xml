@@ -1,10 +1,9 @@
 <resources>
     <string name="app_name">Weather_Nikola_Brodar</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
 
     <string name="not_one_saved_languages">You dont have saved any languages</string>
+
+    <string name="youtube_api_key">AIzaSyCN7PX5sMGOysm2BzsZ8ml7J-jw6u2jxv0</string>
     <string name="save_language">SAVE LANGUAGE</string>
 
     <string name="menu_filter_by_language">Filter only mobile languages</string>

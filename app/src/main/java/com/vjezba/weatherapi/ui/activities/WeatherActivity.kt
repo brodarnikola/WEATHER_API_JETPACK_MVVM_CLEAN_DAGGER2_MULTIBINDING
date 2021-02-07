@@ -8,7 +8,6 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.vjezba.weatherapi.R
 
-
 class WeatherActivity : BaseActivity(R.id.no_internet_layout, R.id.no_gps_location_service_layout) {
 
     private lateinit var navController: NavController
