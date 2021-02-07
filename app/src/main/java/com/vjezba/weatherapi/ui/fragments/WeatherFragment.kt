@@ -36,7 +36,7 @@ class WeatherFragment : Fragment() {
     var searchNewCityData = false
 
     private lateinit var locationCallback: LocationCallback
-    private var fusedLocationClient: FusedLocationProviderClient? = null
+    //private var fusedLocationClient: FusedLocationProviderClient? = null
 
     lateinit var binding: FragmentWeatherBinding
 
@@ -57,16 +57,25 @@ class WeatherFragment : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        createLocationRequest()
-
-        lifecycleScope.launch(Dispatchers.Main) {
-            delay(4000)
-            setupLiveDataAndObservePattern()
-        }
-        //weatherViewModel.getLastLocationListener(requireContext(), fusedLocationClient)
+        checkIfCurrentLocationAlreadyFetched()
 
         setupClickListener()
+    }
+
+    private fun checkIfCurrentLocationAlreadyFetched() {
+        if( !weatherViewModel.checkIfCurrentLocationAlreadyFetched() ) {
+
+            weatherViewModel.setupLocationRequest(requireContext(), requireActivity() )
+
+            lifecycleScope.launch(Dispatchers.Main) {
+                delay(4000)
+                setupLiveDataAndObservePattern()
+            }
+            //weatherViewModel.getLastLocationListener(requireContext(), fusedLocationClient)
+        }
+        else {
+            setupLiveDataAndObservePattern()
+        }
     }
 
     override fun onPause() {
@@ -75,35 +84,8 @@ class WeatherFragment : Fragment() {
     }
 
     private fun stopLocationUpdates() {
-        fusedLocationClient?.removeLocationUpdates(locationCallback)
-    }
-
-    @SuppressLint("MissingPermission")
-    fun createLocationRequest() {
-        val locationRequest = LocationRequest.create().apply {
-            interval = 10000
-            fastestInterval = 5000
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
-
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult?) {
-                locationResult ?: return
-                for (location in locationResult.locations){
-                    // Update UI with location data
-                    // ...
-                    if(location != null) {
-                        Log.i("Tag", "New location received: ${location}")
-                        weatherViewModel.getLastLocationListener(requireContext(), fusedLocationClient)
-                        fusedLocationClient?.removeLocationUpdates(this)
-                    }
-                }
-            }
-        }
-
-        fusedLocationClient?.requestLocationUpdates(locationRequest,
-            locationCallback,
-            Looper.getMainLooper())
+        if( !weatherViewModel.checkIfCurrentLocationAlreadyFetched() )
+            weatherViewModel.stopLocationRequest()
     }
 
     private fun setupClickListener() {

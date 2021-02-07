@@ -22,15 +22,18 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.os.Build
+import android.os.Looper
 import android.util.Log
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.vjezba.domain.model.Weather
 import com.vjezba.domain.repository.WeatherRepository
+import com.vjezba.weatherapi.App
 import io.reactivex.ObservableSource
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -45,6 +48,8 @@ class WeatherViewModel @ViewModelInject constructor(
 ) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
+    private lateinit var locationCallback: LocationCallback
+    private var fusedLocationClient: FusedLocationProviderClient? = null
 
     private val _weatherMutableLiveData = MutableLiveData<Weather>().apply {
         value = Weather()
@@ -173,6 +178,48 @@ class WeatherViewModel @ViewModelInject constructor(
         }
     }
 
+    fun checkIfCurrentLocationAlreadyFetched(): Boolean {
+        return if (!App.ref.getCurrentLocationOnlyOnce) {
+            App.ref.getCurrentLocationOnlyOnce = true
+            return false
+        } else {
+            return true
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun setupLocationRequest( context: Context, activity: FragmentActivity ) {
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
+        val locationRequest = LocationRequest.create().apply {
+            interval = 10000
+            fastestInterval = 5000
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+                for (location in locationResult.locations){
+                    // Update UI with location data
+                    // ...
+                    if(location != null) {
+                        Log.i("Tag", "New location received: ${location}")
+                        getLastLocationListener(context, fusedLocationClient)
+                        fusedLocationClient?.removeLocationUpdates(this)
+                    }
+                }
+            }
+        }
+
+        fusedLocationClient?.requestLocationUpdates(locationRequest,
+            locationCallback,
+            Looper.getMainLooper())
+    }
+
+    fun stopLocationRequest() {
+        fusedLocationClient?.removeLocationUpdates(locationCallback)
+    }
 
     override fun onCleared() {
         super.onCleared()
