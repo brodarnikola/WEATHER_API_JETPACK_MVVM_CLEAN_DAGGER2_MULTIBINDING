@@ -70,9 +70,8 @@ class YoutubeFragment : Fragment() {
             it.isEnabled = false
             it.alpha = 0.4f
             youtubeViewModel.getYoutubeVideos(etYoutubeKeyWord.text.toString())
-//            val direction =
-//                ForecastFragmentDirections.forecastFragmentToForecastDatabaseFragment( cityName = cityName )
-//            findNavController().navigate(direction)
+            youtubeVideosAdapter.youtubeVideosList.clear()
+            youtubeVideosAdapter.notifyDataSetChanged()
         }
     }
 
