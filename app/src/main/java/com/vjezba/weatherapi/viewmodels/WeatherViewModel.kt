@@ -31,6 +31,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
+import com.vjezba.data.di_dagger2.WeatherNetwork
 import com.vjezba.domain.model.Weather
 import com.vjezba.domain.repository.WeatherRepository
 import com.vjezba.weatherapi.App
@@ -44,7 +45,7 @@ import java.util.*
 
 
 class WeatherViewModel @ViewModelInject constructor(
-    private val weatherRepository: WeatherRepository
+    @WeatherNetwork private val weatherRepository: WeatherRepository
 ) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()

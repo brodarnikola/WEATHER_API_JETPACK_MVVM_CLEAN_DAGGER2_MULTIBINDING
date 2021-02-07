@@ -18,11 +18,13 @@ package com.vjezba.data.di
 
 import com.vjezba.data.database.WeatherDatabase
 import com.vjezba.data.database.mapper.DbMapper
-import com.vjezba.data.di_dagger2.WeatherNetwork
 import com.vjezba.data.di_dagger2.youtube.YoutubeNetwork
 import com.vjezba.data.networking.WeatherRepositoryApi
+import com.vjezba.data.networking.youtube.YoutubeRepositoryApi
 import com.vjezba.data.repository.WeatherRepositoryImpl
+import com.vjezba.data.repository.YoutubeRepositoryImpl
 import com.vjezba.domain.repository.WeatherRepository
+import com.vjezba.domain.repository.YoutubeRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,11 +32,11 @@ import dagger.hilt.android.components.ActivityComponent
 
 @Module
 @InstallIn(ActivityComponent::class)
-class RepositoryModule {
+class YoutubeRepositoryModule {
 
     @Provides
-    @WeatherNetwork
-    fun provideAllDataFromRestApiNetworkOrFromRoom(weatherDatabase: WeatherDatabase, @WeatherNetwork weatherRepositoryApi: WeatherRepositoryApi, dbMapper : DbMapper) : WeatherRepository {
-        return WeatherRepositoryImpl(weatherDatabase, weatherRepositoryApi, dbMapper)
+    @YoutubeNetwork
+    fun provideYoutubeVideosByKeywordFromRestApi(  @YoutubeNetwork youtubeRepositoryApi: YoutubeRepositoryApi, dbMapper : DbMapper) : YoutubeRepository {
+        return YoutubeRepositoryImpl( youtubeRepositoryApi, dbMapper)
     }
 }

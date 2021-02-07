@@ -2,7 +2,9 @@ package com.vjezba.data.database.mapper
 
 import com.vjezba.data.database.model.DBWeather
 import com.vjezba.data.networking.model.*
+import com.vjezba.data.networking.youtube.model.ApiYoutubeVideosMain
 import com.vjezba.domain.model.*
+import com.vjezba.domain.model.youtube.*
 
 class DbMapperImpl : DbMapper {
 
@@ -66,6 +68,35 @@ class DbMapperImpl : DbMapper {
                 dateAndTime
             )
         }
+    }
+
+    override fun mapApiYoutubeVideosToDomainYoutube(youtubeVideosMain: ApiYoutubeVideosMain): YoutubeVideosMain {
+
+        return with(youtubeVideosMain) {
+            YoutubeVideosMain(
+                regionCode,
+//                items.map {
+//                    it.id.kind
+//                }
+                items.map {
+
+                        YoutubeVideos(
+                            YoutubeVideoId(it.id.kind, it.id.videoId),
+                            YoutubeVideoSnippet(
+                                it.snippet.title, it.snippet.description,
+                                YoutubeVideoThumbnails(
+                                    YoutubeVideoThumbnailsMedium(
+                                        it.snippet.thumbnails.medium.url,
+                                        it.snippet.thumbnails.medium.width,
+                                        it.snippet.thumbnails.medium.height
+                                    )
+                                )
+                        ))
+
+                }
+            )
+        }
+
     }
 
 

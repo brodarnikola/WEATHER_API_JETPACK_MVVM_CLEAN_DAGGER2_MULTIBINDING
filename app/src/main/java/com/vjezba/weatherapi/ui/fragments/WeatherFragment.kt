@@ -2,6 +2,7 @@ package com.vjezba.weatherapi.ui.fragments
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.Intent
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
@@ -18,6 +19,7 @@ import com.google.android.gms.location.*
 import com.vjezba.domain.model.Weather
 import com.vjezba.weatherapi.R
 import com.vjezba.weatherapi.databinding.FragmentWeatherBinding
+import com.vjezba.weatherapi.ui.activities.YoutubeWeatherActivity
 import com.vjezba.weatherapi.viewmodels.WeatherViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_weather.*
@@ -34,9 +36,6 @@ class WeatherFragment : Fragment() {
 
     var cityName = ""
     var searchNewCityData = false
-
-    private lateinit var locationCallback: LocationCallback
-    //private var fusedLocationClient: FusedLocationProviderClient? = null
 
     lateinit var binding: FragmentWeatherBinding
 
@@ -104,6 +103,13 @@ class WeatherFragment : Fragment() {
                 searchNewCityData = true
                 weatherViewModel.getWeatherDataByCityName(etCityName.text.toString())
             }
+        }
+
+        binding.btnStartYoutubeActivity.setOnClickListener {
+
+            val direction =
+                WeatherFragmentDirections.weatherFragmentToYoutubeFragment()
+            findNavController().navigate(direction)
         }
     }
 

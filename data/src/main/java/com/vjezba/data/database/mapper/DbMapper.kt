@@ -2,7 +2,9 @@ package com.vjezba.data.database.mapper
 
 import com.vjezba.data.database.model.DBWeather
 import com.vjezba.data.networking.model.*
+import com.vjezba.data.networking.youtube.model.ApiYoutubeVideosMain
 import com.vjezba.domain.model.*
+import com.vjezba.domain.model.youtube.YoutubeVideosMain
 
 
 interface DbMapper {
@@ -16,4 +18,6 @@ interface DbMapper {
 
     fun mapDBWeatherListToWeather(weather: DBWeather): ForecastData
 
+
+    fun mapApiYoutubeVideosToDomainYoutube( youtubeVideosMain: ApiYoutubeVideosMain): YoutubeVideosMain
 }

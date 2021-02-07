@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
-package com.vjezba.data
+package com.vjezba.domain.repository
 
-const val API_KEY_FOR_OPEN_WEATHER = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
+import com.vjezba.domain.model.youtube.YoutubeVideosMain
+import io.reactivex.Flowable
+
+
+interface YoutubeRepository {
+
+    fun getYoutubeVideosFromKeyWord( part: String, maxResults: Int, youtubeKeyWord: String, type: String) : Flowable<YoutubeVideosMain>
+}
