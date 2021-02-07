@@ -106,8 +106,10 @@ class WeatherFragment : Fragment() {
         }
 
         binding.btnStartYoutubeActivity.setOnClickListener {
-            val intent = Intent(requireActivity(), YoutubeWeatherActivity::class.java)
-            startActivity(intent)
+
+            val direction =
+                WeatherFragmentDirections.weatherFragmentToYoutubeFragment()
+            findNavController().navigate(direction)
         }
     }
 

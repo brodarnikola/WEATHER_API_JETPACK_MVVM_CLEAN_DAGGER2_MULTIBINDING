@@ -1,26 +1,30 @@
 package com.vjezba.weatherapi.ui.fragments
 
+import android.content.ContentValues
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.vjezba.weatherapi.databinding.FragmentYoutubeBinding
-import com.vjezba.weatherapi.ui.adapters.ForecastAdapter
-import com.vjezba.weatherapi.viewmodels.ForecastViewModel
+import com.vjezba.weatherapi.ui.adapters.YoutubeVideosAdapter
+import com.vjezba.weatherapi.viewmodels.YoutubeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_weather.*
+import kotlinx.android.synthetic.main.fragment_youtube.*
 
 @AndroidEntryPoint
 class YoutubeFragment : Fragment() {
 
-    val forecastViewModel: ForecastViewModel by viewModels()
+    val youtubeViewModel: YoutubeViewModel by viewModels()
 
-    private lateinit var forecastAdapter: ForecastAdapter
-    var weatherLayoutManager: LinearLayoutManager? = null
+    private lateinit var youtubeVideosAdapter: YoutubeVideosAdapter
+    var youtubeVideoLayoutManager: LinearLayoutManager? = null
 
     lateinit var binding: FragmentYoutubeBinding
 
@@ -32,7 +36,7 @@ class YoutubeFragment : Fragment() {
         binding = FragmentYoutubeBinding.inflate(inflater, container, false)
         context ?: return binding.root
 
-        activity?.tvToolbarTitle?.text = "FORECAST"
+        activity?.tvToolbarTitle?.text = "YOUTUBE VIDEOS"
 
         return binding.root
     }
@@ -42,34 +46,45 @@ class YoutubeFragment : Fragment() {
 
         initializeUi()
 
-//        forecastViewModel.forecastList.observe(this@YoutubeFragment, Observer { items ->
-//            Log.d(ContentValues.TAG, "Data is: ${items.forecastList.joinToString { "-" }}")
-//            progressBar.visibility = View.GONE
-//
-//            forecastAdapter.updateDevices(items.forecastList.toMutableList())
-//        })
-//
-//        forecastViewModel.getForecastFromNetwork(cityName)
+        setupClickListeners()
+
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+
+        youtubeViewModel.youtubeListLiveData.observe(this@YoutubeFragment, Observer { items ->
+            Log.d(ContentValues.TAG, "Data is: ${items.items.joinToString { "-" }}")
+
+
+            binding.btnShowYoutubeVideos.isEnabled = true
+            binding.btnShowYoutubeVideos.alpha = 1.0f
+
+            youtubeVideosAdapter.updateDevices(items.items.toMutableList())
+        })
+    }
+
+    private fun setupClickListeners() {
+
+        binding.btnShowYoutubeVideos.setOnClickListener {
+            it.isEnabled = false
+            it.alpha = 0.4f
+            youtubeViewModel.getYoutubeVideos(etYoutubeKeyWord.text.toString())
+//            val direction =
+//                ForecastFragmentDirections.forecastFragmentToForecastDatabaseFragment( cityName = cityName )
+//            findNavController().navigate(direction)
+        }
     }
 
     private fun initializeUi() {
 
-        //tvForecast.text = "City name: ${cityName}. Forecast for next 5 days: "
+        youtubeVideoLayoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
 
-        weatherLayoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        youtubeVideosAdapter = YoutubeVideosAdapter( mutableListOf(), requireActivity() )
 
-        forecastAdapter = ForecastAdapter( mutableListOf() )
-
-//        binding.forecastList.apply {
-//            layoutManager = weatherLayoutManager
-//            adapter = forecastAdapter
-//        }
-//        binding.forecastList.adapter = forecastAdapter
-
-        binding.btnRoomOldWeatherData.setOnClickListener {
-//            val direction =
-//                ForecastFragmentDirections.forecastFragmentToForecastDatabaseFragment( cityName = cityName )
-//            findNavController().navigate(direction)
+        youtube_list.apply {
+            layoutManager = youtubeVideoLayoutManager
+            adapter = youtubeVideosAdapter
         }
     }
 

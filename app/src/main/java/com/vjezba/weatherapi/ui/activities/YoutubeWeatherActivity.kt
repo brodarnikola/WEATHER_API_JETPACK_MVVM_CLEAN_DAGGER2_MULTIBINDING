@@ -9,16 +9,21 @@ import kotlinx.android.synthetic.main.activity_youtube_weather.*
 
 
 class YoutubeWeatherActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListener   {
+
+    var videoId = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_youtube_weather)
+
+        videoId = intent.getStringExtra("videoId") ?: ""
         youtube_player_view.initialize(resources.getString(R.string.youtube_api_key), this)
     }
 
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider?, player: YouTubePlayer?, wasRestored: Boolean) {
         if (!wasRestored) {
             //player?.cueVideo("wKJ9KzGQq0w")
-            player?.loadVideo("wKJ9KzGQq0w")
+            player?.loadVideo(videoId)
             player?.play()
         }
     }

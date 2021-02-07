@@ -16,7 +16,7 @@
 
 package com.vjezba.data.repository
 
-import android.util.Log
+import com.vjezba.data.API_KEY_FOR_OPEN_WEATHER
 import com.vjezba.data.database.WeatherDatabase
 import com.vjezba.data.database.mapper.DbMapper
 import com.vjezba.data.networking.WeatherRepositoryApi
@@ -37,8 +37,9 @@ class WeatherRepositoryImpl constructor(
 
     override fun getWeatherData(latitude: Double, longitude: Double): Flowable<Weather> {
 
-        val appId = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
-        val result = service.getWeather(latitude, longitude, appId)
+        //val appId = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
+
+        val result = service.getWeather(latitude, longitude, API_KEY_FOR_OPEN_WEATHER)
 
         //Observable.concatArrayEager(newsResult, observableFromDB)
 
@@ -49,18 +50,17 @@ class WeatherRepositoryImpl constructor(
 
     override fun getWeatherDataByCityName(cityName: String): Flowable<Weather> {
 
-        val appId = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
+        //val appId = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
         val cityNameUrlEncoded = URLEncoder.encode(cityName, "utf-8")
 
-        val result = service.getWeatherByCityName(cityNameUrlEncoded, appId)
+        val result = service.getWeatherByCityName(cityNameUrlEncoded, API_KEY_FOR_OPEN_WEATHER)
         val correctResult = result.map { dbMapper?.mapApiWeatherToDomainWeather(it)!! }
 
         return correctResult
     }
 
     override fun getForecastData(cityName: String): Flowable<Forecast> {
-        val appId = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
-        val result = service.getForecast(cityName, appId)
+        val result = service.getForecast(cityName, API_KEY_FOR_OPEN_WEATHER)
 
         val correctResult = result.map { dbMapper?.mapApiForecastToDomainForecast(it)!! }
 

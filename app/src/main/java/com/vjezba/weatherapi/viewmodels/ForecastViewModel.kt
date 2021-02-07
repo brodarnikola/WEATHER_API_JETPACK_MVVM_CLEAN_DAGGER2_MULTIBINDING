@@ -24,6 +24,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.vjezba.data.database.WeatherDatabase
 import com.vjezba.data.database.mapper.DbMapper
+import com.vjezba.data.di_dagger2.WeatherNetwork
 import com.vjezba.domain.model.CityData
 import com.vjezba.domain.model.Forecast
 import com.vjezba.domain.model.ForecastData
@@ -37,7 +38,7 @@ import io.reactivex.schedulers.Schedulers
 
 
 class ForecastViewModel @ViewModelInject constructor(
-    private val weatherRepository: WeatherRepository,
+    @WeatherNetwork private val weatherRepository: WeatherRepository,
     private val dbWeather: WeatherDatabase,
     private val dbMapper: DbMapper?
 ) : ViewModel() {

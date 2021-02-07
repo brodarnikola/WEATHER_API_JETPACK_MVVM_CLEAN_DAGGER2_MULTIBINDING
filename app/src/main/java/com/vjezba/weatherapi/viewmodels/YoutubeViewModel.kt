@@ -22,13 +22,10 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.vjezba.data.database.WeatherDatabase
-import com.vjezba.data.database.mapper.DbMapper
-import com.vjezba.domain.model.CityData
-import com.vjezba.domain.model.Forecast
-import com.vjezba.domain.model.ForecastData
-import com.vjezba.domain.repository.WeatherRepository
-import io.reactivex.Observable
+import com.vjezba.data.di_dagger2.youtube.YoutubeNetwork
+import com.vjezba.domain.model.youtube.YoutubeVideosMain
+import com.vjezba.domain.repository.YoutubeRepository
+import io.reactivex.ObservableSource
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -37,35 +34,41 @@ import io.reactivex.schedulers.Schedulers
 
 
 class YoutubeViewModel @ViewModelInject constructor(
-    private val weatherRepository: WeatherRepository,
-    private val dbWeather: WeatherDatabase,
-    private val dbMapper: DbMapper?
+    @YoutubeNetwork private val repository: YoutubeRepository
 ) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 
-    private val _forecastMutableLiveData = MutableLiveData<Forecast>().apply {
-        value = Forecast("", listOf(), CityData("", 0L))
+    private val _youtubeMutableLiveData = MutableLiveData<YoutubeVideosMain>().apply {
+        value = YoutubeVideosMain( "", listOf())
     }
 
-    val forecastList: LiveData<Forecast> = _forecastMutableLiveData
+    val youtubeListLiveData: LiveData<YoutubeVideosMain> = _youtubeMutableLiveData
 
-    fun getForecastFromNetwork(cityName: String) {
-        weatherRepository.getForecastData(cityName)
+    fun getYoutubeVideos(youtubeKeyWord: String) {
+        val part = "Snippet"
+        val maxResults = 50
+        val type = "video"
+        repository.getYoutubeVideosFromKeyWord(part, maxResults, youtubeKeyWord, type)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .toObservable()
-            .subscribe(object : Observer<Forecast> {
+            .onErrorResumeNext { throwable: Throwable ->
+                return@onErrorResumeNext ObservableSource {
+                    _youtubeMutableLiveData.value?.let {
+                        _youtubeMutableLiveData.value = YoutubeVideosMain()
+                    }
+                    Log.d("onErrorResumeNext", "on exception resume next, update ui" + throwable.localizedMessage)
+                }
+            }
+            .subscribe(object : Observer<YoutubeVideosMain> {
                 override fun onSubscribe(d: Disposable) {
                     compositeDisposable.add(d)
                 }
 
-                override fun onNext(response: Forecast) {
-
-                    insertWeatherIntoDatabase(response)
-
-                    _forecastMutableLiveData.value?.let {
-                        _forecastMutableLiveData.value = response
+                override fun onNext(response: YoutubeVideosMain) {
+                    _youtubeMutableLiveData.value?.let {
+                        _youtubeMutableLiveData.value = response
                     }
                 }
 
@@ -81,53 +84,6 @@ class YoutubeViewModel @ViewModelInject constructor(
                 }
             })
     }
-
-    private fun insertWeatherIntoDatabase(forecast: Forecast) {
-
-        Observable.fromCallable {
-
-            val weather = dbMapper?.mapDomainWeatherToDbWeather(forecast) ?: listOf()
-            dbWeather.weatherDAO().updateWeather(
-                weather
-            )
-            Log.d(
-                "da li ce uci unutra * ",
-                "da li ce uci unutra, spremiti podatke u bazu podataka: " + toString()
-            )
-        }
-            .doOnError { Log.e("Error in observables", "Error is: ${it.message}, ${throw it}") }
-            .subscribeOn(Schedulers.io())
-            .subscribe {
-                Log.d(
-                    "Hoce spremiti vijesti",
-                    "Inserted ${forecast.forecastList.size} forecast data from API into DB..."
-                )
-            }
-    }
-
-    fun getWeatherFromLocalStorage() {
-        Observable.fromCallable {
-            val listForecast = getForecastFromDB()
-            Forecast("", listForecast, CityData())
-        }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext { data: Forecast? ->
-
-                Log.i("Size of database", "")
-                _forecastMutableLiveData.value?.let { _ ->
-                    _forecastMutableLiveData.value = data
-                }
-            }
-            .subscribe()
-    }
-
-    private fun getForecastFromDB(): List<ForecastData> {
-        return dbWeather.weatherDAO().getWeather().map {
-            dbMapper?.mapDBWeatherListToWeather(it) ?: ForecastData()
-        }
-    }
-
 
     override fun onCleared() {
         super.onCleared()

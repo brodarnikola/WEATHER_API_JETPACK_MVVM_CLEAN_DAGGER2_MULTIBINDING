@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.vjezba.data.di
+package com.vjezba.data.di_dagger2.youtube
 
 import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.vjezba.data.BuildConfig
-import com.vjezba.data.di_dagger2.WeatherNetwork
-import com.vjezba.data.di_dagger2.youtube.YoutubeNetwork
 import com.vjezba.data.networking.WeatherRepositoryApi
+import com.vjezba.data.networking.youtube.YoutubeRepositoryApi
+import com.vjezba.domain.repository.YoutubeRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,24 +34,21 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
+private const val RETROFIT_BASE_URL = "https://www.googleapis.com/youtube/v3/"
 
-
-private const val RETROFIT_BASE_URL = "https://api.openweathermap.org/data/2.5/"
-
-@Module
 @InstallIn(ApplicationComponent::class)
-class NetworkModuleHilt {
-
+@Module
+class YoutubeNetworkModule {
 
     @Provides
-    @WeatherNetwork
+    @YoutubeNetwork
     fun provideLoggingInterceptor() =
         HttpLoggingInterceptor().apply { level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE }
 
     @Provides
     @Singleton
-    @WeatherNetwork
-    fun provideAuthInterceptorOkHttpClient( @WeatherNetwork interceptor: HttpLoggingInterceptor): OkHttpClient {
+    @YoutubeNetwork
+    fun provideAuthInterceptorOkHttpClient( @YoutubeNetwork interceptor: HttpLoggingInterceptor): OkHttpClient {
         return OkHttpClient.Builder().addInterceptor(interceptor)
             .addNetworkInterceptor(StethoInterceptor())
             .build()
@@ -60,13 +57,13 @@ class NetworkModuleHilt {
 
     @Provides
     @Singleton
-    @WeatherNetwork
-    fun provideGsonConverterFactory( @WeatherNetwork gson: Gson): GsonConverterFactory =
+    @YoutubeNetwork
+    fun provideGsonConverterFactory( @YoutubeNetwork gson: Gson): GsonConverterFactory =
         GsonConverterFactory.create(gson)
 
     @Singleton
     @Provides
-    @WeatherNetwork
+    @YoutubeNetwork
     fun provideGsonBuilder(): Gson {
         return GsonBuilder()
             .create()
@@ -74,8 +71,8 @@ class NetworkModuleHilt {
 
     @Singleton
     @Provides
-    @WeatherNetwork
-    fun provideRetrofit( @WeatherNetwork converterFactory: GsonConverterFactory, @WeatherNetwork client: OkHttpClient): Retrofit.Builder {
+    @YoutubeNetwork
+    fun provideRetrofit( @YoutubeNetwork converterFactory: GsonConverterFactory, @YoutubeNetwork client: OkHttpClient): Retrofit.Builder {
         return Retrofit.Builder()
             .client(client)
             .baseUrl(RETROFIT_BASE_URL)
@@ -85,11 +82,12 @@ class NetworkModuleHilt {
 
     @Singleton
     @Provides
-    @WeatherNetwork
-    fun provideWeatherService( @WeatherNetwork retrofit: Retrofit.Builder): WeatherRepositoryApi {
+    @YoutubeNetwork
+    fun provideYoutubeService( @YoutubeNetwork retrofit: Retrofit.Builder): YoutubeRepositoryApi {
         return retrofit
             .build()
-            .create(WeatherRepositoryApi::class.java)
+            .create(YoutubeRepositoryApi::class.java)
     }
+
 
 }
