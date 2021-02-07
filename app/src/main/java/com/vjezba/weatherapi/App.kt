@@ -9,37 +9,39 @@ import org.greenrobot.eventbus.EventBus
 @HiltAndroidApp
 class App : Application() {
 
-  init {
-    ref = this
-  }
+    var getCurrentLocationOnlyOnce: Boolean
 
-
-  companion object {
-    @JvmStatic
-    lateinit var ref: App
-  }
-
-  //event bus initialization
-  val eventBus: EventBus by lazy {
-    EventBus.builder()
-      .logNoSubscriberMessages(false)
-      .sendNoSubscriberEvent(false)
-      .build()
-  }
-
-  override fun onCreate() {
-    super.onCreate()
-    //instance = this
-
-    ConnectivityMonitor.initialize(this) { available ->
-        eventBus.post(
-            ConnectivityChangedEvent(
-                available
-            )
-        )
+    init {
+        ref = this
+        getCurrentLocationOnlyOnce = false
     }
 
-  }
+    companion object {
+        @JvmStatic
+        lateinit var ref: App
+    }
+
+    //event bus initialization
+    val eventBus: EventBus by lazy {
+        EventBus.builder()
+            .logNoSubscriberMessages(false)
+            .sendNoSubscriberEvent(false)
+            .build()
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        //instance = this
+
+        ConnectivityMonitor.initialize(this) { available ->
+            eventBus.post(
+                ConnectivityChangedEvent(
+                    available
+                )
+            )
+        }
+
+    }
 
 }
 
