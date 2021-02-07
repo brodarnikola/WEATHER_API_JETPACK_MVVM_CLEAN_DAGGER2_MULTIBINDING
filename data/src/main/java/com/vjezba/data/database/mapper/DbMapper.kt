@@ -1,25 +1,23 @@
 package com.vjezba.data.database.mapper
 
-import com.vjezba.data.database.model.DBMovies
-import com.vjezba.data.networking.model.ApiActors
-import com.vjezba.data.networking.model.ApiMovieDetails
-import com.vjezba.data.networking.model.ApiMovies
-import com.vjezba.data.networking.model.ApiTrailers
+import com.vjezba.data.database.model.DBWeather
+import com.vjezba.data.networking.model.*
+import com.vjezba.data.networking.youtube.model.ApiYoutubeVideosMain
 import com.vjezba.domain.model.*
+import com.vjezba.domain.model.youtube.YoutubeVideosMain
 
 
 interface DbMapper {
 
-    fun mapApiMoviesToDomainMovies(apiNews: ApiMovies): Movies
+    // forecast
+    fun mapApiWeatherToDomainWeather(apiForecast: ApiWeather): Weather
 
-    fun mapApiMovieDetailsToDomainMovieDetails(apiMovieDetails: ApiMovieDetails): MovieDetails
+    fun mapApiForecastToDomainForecast(apiForecast: ApiForecast): Forecast
 
-    fun mapDomainMoviesToDbMovies(newsList: Movies): List<DBMovies>
+    fun mapDomainWeatherToDbWeather(forecast: Forecast): List<DBWeather>
 
-    fun mapDBMoviesListToMovies(articlesList: DBMovies): MovieResult
+    fun mapDBWeatherListToWeather(weather: DBWeather): ForecastData
 
 
-    fun mapApiTrailersToDomainTrailers(apiTrailers: ApiTrailers): Trailer
-
-    fun mapApiActorsToDomainActors(apiActors: ApiActors): Actors
+    fun mapApiYoutubeVideosToDomainYoutube( youtubeVideosMain: ApiYoutubeVideosMain): YoutubeVideosMain
 }

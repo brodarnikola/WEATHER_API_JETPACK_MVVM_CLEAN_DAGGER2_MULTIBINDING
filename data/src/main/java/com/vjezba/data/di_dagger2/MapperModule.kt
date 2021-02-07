@@ -20,9 +20,11 @@ import com.vjezba.data.database.mapper.DbMapper
 import com.vjezba.data.database.mapper.DbMapperImpl
 import dagger.Module
 import dagger.Provides
-
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 
 @Module
+@InstallIn(ActivityComponent::class)
 class MapperModule {
 
     @Provides

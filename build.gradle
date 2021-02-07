@@ -28,7 +28,6 @@ buildscript {
         materialVersion = '1.2.0'
         navigationVersion = '2.2.0'
         okhttpLoggingVersion = OKHTTPCLIENT_VERSION //'4.7.2'
-        pagingVersion = PAGING_VERSION //'3.0.0-alpha02'
         recyclerViewVersion = '1.2.0-alpha05'
         retrofitVersion = RETROFIT_VERSION //'2.9.0'
         roomVersion = ROOM_VERSION //'2.1.0'
@@ -36,8 +35,12 @@ buildscript {
         truthVersion = '0.42'
         testExtJunit = '1.1.0'
         uiAutomatorVersion = '2.2.0'
-        workVersion = WORK_VERSION //'2.1.0'
+
         daggerVersion = DAGGER2_VERSION
+        assistedInjectVersion = '0.5.2'
+
+        hiltVersion = '2.28.3-alpha'
+        hiltViewModelVersion = '1.0.0-alpha02'
 
         //rxjava2 versions
         rxjavaVersion = '2.1.9'
@@ -53,6 +56,7 @@ buildscript {
         classpath "com.android.tools.build:gradle:4.0.0"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navigationVersion"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

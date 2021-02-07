@@ -16,15 +16,17 @@
 
 package com.vjezba.data.di
 
-import android.app.Application
 import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.vjezba.data.BuildConfig
-import com.vjezba.data.networking.ConnectivityUtil
-import com.vjezba.data.networking.MovieRepositoryApi
+import com.vjezba.data.di_dagger2.WeatherNetwork
+import com.vjezba.data.di_dagger2.youtube.YoutubeNetwork
+import com.vjezba.data.networking.WeatherRepositoryApi
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -34,19 +36,22 @@ import javax.inject.Singleton
 
 
 
-private const val RETROFIT_BASE_URL = "https://api.themoviedb.org/3/"
+private const val RETROFIT_BASE_URL = "https://api.openweathermap.org/data/2.5/"
 
 @Module
-class NetworkModule {
+@InstallIn(ApplicationComponent::class)
+class NetworkModuleHilt {
 
 
     @Provides
+    @WeatherNetwork
     fun provideLoggingInterceptor() =
         HttpLoggingInterceptor().apply { level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE }
 
     @Provides
     @Singleton
-    fun provideAuthInterceptorOkHttpClient(interceptor: HttpLoggingInterceptor): OkHttpClient {
+    @WeatherNetwork
+    fun provideAuthInterceptorOkHttpClient( @WeatherNetwork interceptor: HttpLoggingInterceptor): OkHttpClient {
         return OkHttpClient.Builder().addInterceptor(interceptor)
             .addNetworkInterceptor(StethoInterceptor())
             .build()
@@ -55,11 +60,13 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideGsonConverterFactory(gson: Gson): GsonConverterFactory =
+    @WeatherNetwork
+    fun provideGsonConverterFactory( @WeatherNetwork gson: Gson): GsonConverterFactory =
         GsonConverterFactory.create(gson)
 
     @Singleton
     @Provides
+    @WeatherNetwork
     fun provideGsonBuilder(): Gson {
         return GsonBuilder()
             .create()
@@ -67,7 +74,8 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(converterFactory: GsonConverterFactory, client: OkHttpClient): Retrofit.Builder {
+    @WeatherNetwork
+    fun provideRetrofit( @WeatherNetwork converterFactory: GsonConverterFactory, @WeatherNetwork client: OkHttpClient): Retrofit.Builder {
         return Retrofit.Builder()
             .client(client)
             .baseUrl(RETROFIT_BASE_URL)
@@ -77,17 +85,11 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun provideGithubService(retrofit: Retrofit.Builder): MovieRepositoryApi {
+    @WeatherNetwork
+    fun provideWeatherService( @WeatherNetwork retrofit: Retrofit.Builder): WeatherRepositoryApi {
         return retrofit
             .build()
-            .create(MovieRepositoryApi::class.java)
+            .create(WeatherRepositoryApi::class.java)
     }
-
-    @Provides
-    @Singleton
-    fun provideNetworkUtils(app: Application) : ConnectivityUtil {
-        return ConnectivityUtil(app)
-    }
-
 
 }

@@ -35,6 +35,20 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 
+@Entity(tableName = "weather_table")
+data class DBWeather(
+    val temp: String,
+    val feelsLike: String,
+    val tempMax: String,
+    val description: String,
+    val speed: Double,
+    val dateAndTime: String
+) {
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
+}
+
+
 @Entity(tableName = "movie_table")
 data class DBMovies(
     @PrimaryKey(autoGenerate = true)

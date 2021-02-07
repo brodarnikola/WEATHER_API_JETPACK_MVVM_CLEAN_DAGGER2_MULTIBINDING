@@ -1,52 +1,47 @@
 package com.vjezba.weatherapi
 
-import android.app.Activity
 import android.app.Application
-import com.vjezba.weatherapi.di.AppInjector
-import com.vjezba.weatherapi.network.ConnectivityChangedEvent
-import com.vjezba.weatherapi.network.ConnectivityMonitor
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
+import com.vjezba.weatherapi.connectivity.network.ConnectivityChangedEvent
+import com.vjezba.weatherapi.connectivity.network.ConnectivityMonitor
+import dagger.hilt.android.HiltAndroidApp
 import org.greenrobot.eventbus.EventBus
-import javax.inject.Inject
 
-class App : Application(), HasActivityInjector {
+@HiltAndroidApp
+class App : Application() {
 
-  init {
-    ref = this
-  }
+    var getCurrentLocationOnlyOnce: Boolean
 
-  @Inject
-  lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
-
-  companion object {
-    @JvmStatic
-    lateinit var ref: App
-    //lateinit var instance: Application
-    //  private set
-  }
-
-  //event bus initialization
-  val eventBus: EventBus by lazy {
-    EventBus.builder()
-      .logNoSubscriberMessages(false)
-      .sendNoSubscriberEvent(false)
-      .build()
-  }
-
-  override fun onCreate() {
-    super.onCreate()
-    //instance = this
-
-    AppInjector.init(this)
-
-    ConnectivityMonitor.initialize(this) { available ->
-      eventBus.post(ConnectivityChangedEvent(available))
+    init {
+        ref = this
+        getCurrentLocationOnlyOnce = false
     }
 
-  }
+    companion object {
+        @JvmStatic
+        lateinit var ref: App
+    }
 
-  override fun activityInjector() = dispatchingAndroidInjector
+    //event bus initialization
+    val eventBus: EventBus by lazy {
+        EventBus.builder()
+            .logNoSubscriberMessages(false)
+            .sendNoSubscriberEvent(false)
+            .build()
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        //instance = this
+
+        ConnectivityMonitor.initialize(this) { available ->
+            eventBus.post(
+                ConnectivityChangedEvent(
+                    available
+                )
+            )
+        }
+
+    }
 
 }
 

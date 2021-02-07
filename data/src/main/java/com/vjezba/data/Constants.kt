@@ -16,8 +16,4 @@
 
 package com.vjezba.data
 
-/**
- * Constants used throughout the app.
- */
-const val DATABASE_NAME = "programming-language-db-1"
-const val PLANT_DATA_FILENAME = "languages.json"
+const val API_KEY_FOR_OPEN_WEATHER = "b389e4ccf5ae4bbc8072ccd05c8f85c7"

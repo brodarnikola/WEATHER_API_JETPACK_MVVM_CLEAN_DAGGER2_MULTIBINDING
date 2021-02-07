@@ -17,22 +17,25 @@
 package com.vjezba.data.di
 
 import android.app.Application
-import com.vjezba.data.database.MoviesDatabase
-import com.vjezba.data.database.dao.MoviesDao
+import com.vjezba.data.database.WeatherDatabase
+import com.vjezba.data.database.dao.WeatherDAO
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
 import javax.inject.Singleton
 
+@InstallIn(ApplicationComponent::class)
 @Module
 class DatabaseModule {
 
-   @Singleton
+    @Singleton
     @Provides
-    fun provideAppDatabase( app: Application) = MoviesDatabase.create(app)
+    fun provideAppDatabase( app: Application) = WeatherDatabase.create(app)
 
     @Provides
-    fun providePlantDao(moviesDatabase: MoviesDatabase): MoviesDao {
-        return moviesDatabase.moviesDAO()
+    fun providePlantDao(weatherDatabase: WeatherDatabase): WeatherDAO {
+        return weatherDatabase.weatherDAO()
     }
 
 
