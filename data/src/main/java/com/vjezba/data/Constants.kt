@@ -17,3 +17,5 @@
 package com.vjezba.data
 
 const val API_KEY_FOR_OPEN_WEATHER = "b389e4ccf5ae4bbc8072ccd05c8f85c7"
+
+const val API_KEY_FOR_YOUTUBE_VIDEOS = "AIzaSyCN7PX5sMGOysm2BzsZ8ml7J-jw6u2jxv0"

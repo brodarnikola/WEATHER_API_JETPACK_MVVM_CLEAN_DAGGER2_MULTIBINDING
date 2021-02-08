@@ -26,8 +26,6 @@ import retrofit2.http.Query
 
 interface YoutubeRepositoryApi {
 
-    // youtube api key ->   AIzaSyCN7PX5sMGOysm2BzsZ8ml7J-jw6u2jxv0
-
 
     @GET("search")
     @Headers("Content-Type: application/json")
@@ -35,5 +33,9 @@ interface YoutubeRepositoryApi {
                           @Query("q") youtubeInsertedKeyword: String,
                           @Query("type") type: String, @Query("key") apiKey: String ): Flowable<ApiYoutubeVideosMain>
 
-
+    @GET("search")
+    @Headers("Content-Type: application/json")
+    fun getYoutubeVideosNextPage( @Query("part") part: String, @Query("maxResults") maxResults: Int,
+                          @Query("q") youtubeInsertedKeyword: String,
+                          @Query("type") type: String, @Query("pageToken") nextPageToken: String, @Query("key") apiKey: String ): Flowable<ApiYoutubeVideosMain>
 }
