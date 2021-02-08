@@ -58,4 +58,6 @@
 
     <string name="language">Language: %s</string>
 
+    <string name="normal_login_not_fingerprint"> Just for practice to develop biometrics, fingerprints code, api. </string>
+
 </resources>
