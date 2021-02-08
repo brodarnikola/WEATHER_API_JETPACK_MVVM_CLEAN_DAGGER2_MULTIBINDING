@@ -40,16 +40,16 @@ class YoutubeViewModel @ViewModelInject constructor(
     private val compositeDisposable = CompositeDisposable()
 
     private val _youtubeMutableLiveData = MutableLiveData<YoutubeVideosMain>().apply {
-        value = YoutubeVideosMain( "", listOf())
+        value = YoutubeVideosMain( "", "", listOf())
     }
 
     val youtubeListLiveData: LiveData<YoutubeVideosMain> = _youtubeMutableLiveData
 
-    fun getYoutubeVideos(youtubeKeyWord: String) {
+    fun getYoutubeVideos(youtubeKeyWord: String, nextPage: String) {
         val part = "Snippet"
-        val maxResults = 50
+        val maxResults = 20
         val type = "video"
-        repository.getYoutubeVideosFromKeyWord(part, maxResults, youtubeKeyWord, type)
+        repository.getYoutubeVideosFromKeyWord(part, maxResults, youtubeKeyWord, type, nextPage)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .toObservable()

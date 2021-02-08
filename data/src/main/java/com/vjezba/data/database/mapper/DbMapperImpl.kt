@@ -74,6 +74,7 @@ class DbMapperImpl : DbMapper {
 
         return with(youtubeVideosMain) {
             YoutubeVideosMain(
+                nextPageToken,
                 regionCode,
 //                items.map {
 //                    it.id.kind
