@@ -64,7 +64,7 @@ class YoutubeFragment : Fragment() {
         youtubeViewModel.youtubeListLiveData.observe(this@YoutubeFragment, Observer { items ->
             Log.d(ContentValues.TAG, "Data is: ${items.items.joinToString { "-" }}")
 
-            if( page > 1 )
+            if( page > 1 && youtubeVideosAdapter.youtubeVideosList.isNotEmpty())
                 youtubeVideosAdapter.removeLoading()
             loading = false
 
