@@ -22,5 +22,5 @@ import io.reactivex.Flowable
 
 interface YoutubeRepository {
 
-    fun getYoutubeVideosFromKeyWord( part: String, maxResults: Int, youtubeKeyWord: String, type: String) : Flowable<YoutubeVideosMain>
+    fun getYoutubeVideosFromKeyWord( part: String, maxResults: Int, youtubeKeyWord: String, type: String, nextPage: String) : Flowable<YoutubeVideosMain>
 }
