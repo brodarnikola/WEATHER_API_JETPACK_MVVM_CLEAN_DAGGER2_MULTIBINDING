@@ -4,109 +4,94 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.View
+import androidx.activity.viewModels
 import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
-import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Observer
 import com.vjezba.weatherapi.R
+import com.vjezba.weatherapi.viewmodels.FingerprintViewModel
 import kotlinx.android.synthetic.main.activity_login.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class LoginActivity : BaseActivity() {
 
     private val BIOMETRICS_REQUEST_CODE = 1
     private lateinit var biometricPrompt: BiometricPrompt
 
+    private val viewModel: FingerprintViewModel by viewModels()
+
+    var fingerPrintTitle = ""
+    var fingerPrintDescription = ""
+    var fingerPrintCancel = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+    }
 
-        biometricPrompt = createBiometricPrompt()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if( requestCode == BIOMETRICS_REQUEST_CODE ) {
+            Log.i("FingerprintAvailable", "New fingerprint added to mobile phone")
+        }
     }
 
     override fun onStart() {
         super.onStart()
 
-        val biometricManager = BiometricManager.from(this)
-        when (biometricManager.canAuthenticate(BIOMETRIC_STRONG)) {
-            BiometricManager.BIOMETRIC_SUCCESS ->
-                Log.d("MY_APP_TAG", "App can authenticate using biometrics.")
-            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->
-                Log.e("MY_APP_TAG", "No biometric features available on this device.")
-            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE ->
-                Log.e("MY_APP_TAG", "Biometric features are currently unavailable.")
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                // Prompts the user to create credentials that your app accepts.
-                val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
-                    putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
-                        BIOMETRIC_STRONG)
-                }
-                startActivityForResult(enrollIntent, BIOMETRICS_REQUEST_CODE)
-            }
-        }
+        checkIfThereIsAtLeastOneFingerprintAddedToMobilePhone()
+        setCorrectTextForFingerPrintDialog()
+        setOnClickListeners()
+        addLiveData()
 
-        btnBiometricLogin.setOnClickListener {
-            val promptInfo = createPromptInfo()
-            if (biometricManager.canAuthenticate(BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS) {
+    }
+
+    private fun setOnClickListeners() {
+        biometricPrompt = viewModel.createBiometricPrompt()
+
+        btnFingerPrint.setOnClickListener {
+            val promptInfo = viewModel.createPromptInfo(fingerPrintTitle, fingerPrintDescription, fingerPrintCancel)
+            if (viewModel.getBiometricManager().canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS) {
                 biometricPrompt.authenticate(promptInfo)
             } else {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    showSnackbarSync(resources.getString(R.string.normal_login_not_fingerprint), true, rootElement)
-                    delay(2000)
-                    val intent = Intent(this@LoginActivity, WeatherActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                }
-            }
-        }
-    }
-
-    private fun createBiometricPrompt(): BiometricPrompt {
-        val executor = ContextCompat.getMainExecutor(this)
-
-        val callback = object : BiometricPrompt.AuthenticationCallback() {
-            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                super.onAuthenticationError(errorCode, errString)
-                Log.d("BiometricError", "Authentication $errorCode :: $errString")
-                if (errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-                    // loginWithPassword() // Because in this app, the negative button allows the user to enter an account password. This is completely optional and your app doesn’t have to do it.
-                    createPromptInfo()
-                }
-            }
-
-            override fun onAuthenticationFailed() {
-                super.onAuthenticationFailed()
-                Log.d("BiometricFailed", "Authentication failed for an unknown reason")
-            }
-
-            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                super.onAuthenticationSucceeded(result)
-                Log.d("BiometricSuccess", "Authentication was successful")
-                // Proceed with viewing the private encrypted message.
-                //showEncryptedMessage(result.cryptoObject)
+                detail_image.visibility = View.VISIBLE
             }
         }
 
-        val biometricPrompt = BiometricPrompt(this, executor, callback)
-        return biometricPrompt
+        btnContinueToNextScreen.setOnClickListener {
+            val intent = Intent(this, WeatherActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
     }
 
-    private fun createPromptInfo(): BiometricPrompt.PromptInfo {
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(getString(R.string.action_settings))
-            .setSubtitle(getString(R.string.app_name))
-            .setDescription(getString(R.string.created_at))
-            // Authenticate without requiring the user to press a "confirm"
-            // button after satisfying the biometric check
-            .setConfirmationRequired(false)
-            .setNegativeButtonText(getString(R.string.created_by))
-            .setAllowedAuthenticators(BIOMETRIC_STRONG )
-            .build()
-        return promptInfo
+    private fun setCorrectTextForFingerPrintDialog() {
+        fingerPrintTitle = resources.getString(R.string.biometric_fingerprint_title)
+        fingerPrintDescription = resources.getString(R.string.biometric_fingerprint_description)
+        fingerPrintCancel = resources.getString(R.string.biometric_fingerprint_cancel)
+    }
+
+    private fun checkIfThereIsAtLeastOneFingerprintAddedToMobilePhone() {
+        val notOneFingerExistOnMobilePhone = viewModel.checkIfFingerprinteIsEnabled()
+        if( notOneFingerExistOnMobilePhone == android.hardware.biometrics.BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED) {
+            Log.i("FingerprintAvailable", "Da li ce uci za fingerprint Check if fingerprint is availabe: ${notOneFingerExistOnMobilePhone}")
+            // Prompts the user to create credentials that your app accepts.
+            val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                putExtra(
+                    Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                    BiometricManager.Authenticators.BIOMETRIC_STRONG
+                )
+            }
+            startActivityForResult(enrollIntent, BIOMETRICS_REQUEST_CODE)
+        }
+        Log.i("FingerprintAvailable", "Check if there is at least one fingerprint: ${notOneFingerExistOnMobilePhone}")
+    }
+
+    private fun addLiveData() {
+        viewModel.fingerPrintState.observe(this, Observer { state ->
+            detail_image.visibility = View.VISIBLE
+            btnContinueToNextScreen.visibility = View.VISIBLE
+        })
     }
 
 }
