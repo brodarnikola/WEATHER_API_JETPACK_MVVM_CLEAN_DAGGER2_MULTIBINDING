@@ -1,12 +1,17 @@
 package com.vjezba.weatherapi.ui.activities
 
+import android.graphics.Typeface
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
 import com.vjezba.data.networking.ConnectivityUtil
 import com.vjezba.weatherapi.App
+import com.vjezba.weatherapi.R
 import com.vjezba.weatherapi.connectivity.network.ConnectivityChangedEvent
 import dagger.hilt.android.AndroidEntryPoint
 import hr.sil.android.zwicktablet.gps.LocationGpsMonitor
@@ -79,4 +84,25 @@ open class BaseActivity(noWifiViewId: Int = 0, noLocationGpsViewId: Int = 0) : A
             noWifiFrame?.visibility = if (networkAvailable) View.GONE else View.VISIBLE
         }
     }
+
+    fun showSnackbarSync(message: String, isLong: Boolean, mainContentRoot: View) {
+        val snackbar = Snackbar.make(
+            mainContentRoot,
+            message,
+            if (isLong) Snackbar.LENGTH_LONG else Snackbar.LENGTH_SHORT
+        )
+
+        val textColor = ContextCompat.getColor(this, R.color.sunflower_yellow_500)
+
+        val snackbarView = snackbar.view
+        snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.sunflower_green_300) )
+
+        val snackbarText = snackbarView.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+        snackbarText.setTypeface(Typeface.DEFAULT, Typeface.BOLD)
+        snackbarText.setTextColor(textColor)
+        snackbarText.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
+        snackbarText.textSize = 19f
+        snackbar.show()
+    }
+
 }

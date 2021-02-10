@@ -61,7 +61,7 @@ class SplashActivity : AppCompatActivity() {
     private fun startApp() {
 
         if (ConnectivityMonitor.isAvailable() && LocationGpsMonitor(this).turnGPSOn()) {
-            val intent = Intent(this@SplashActivity, WeatherActivity::class.java)
+            val intent = Intent(this@SplashActivity, LoginActivity::class.java)
             startActivity(intent)
             finish()
         } else if (!ConnectivityMonitor.isAvailable()) {
@@ -87,7 +87,7 @@ class SplashActivity : AppCompatActivity() {
         } else if (!LocationGpsMonitor(this).turnGPSOn()) {
             tvTurnOn.text = "Please turn on gps, location service"
         } else {
-            val intent = Intent(this@SplashActivity, WeatherActivity::class.java)
+            val intent = Intent(this@SplashActivity, LoginActivity::class.java)
             startActivity(intent)
             finish()
         }
