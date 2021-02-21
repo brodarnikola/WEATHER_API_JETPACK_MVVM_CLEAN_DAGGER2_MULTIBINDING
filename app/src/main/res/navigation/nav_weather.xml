@@ -27,6 +27,14 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
 
+        <action
+            android:id="@+id/weather_fragment_to_service_music_example_fragment"
+            app:destination="@id/service_music_example"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+
     </fragment>
 
     <fragment
@@ -68,6 +76,13 @@
 
     </fragment>
 
+    <fragment
+        android:id="@+id/service_music_example"
+        android:name="com.vjezba.weatherapi.ui.fragments.ServiceMusicExampleFragment"
+        android:label="Service music example"
+        tools:layout="@layout/fragment_service_music_example">
+
+    </fragment>
 
 
 

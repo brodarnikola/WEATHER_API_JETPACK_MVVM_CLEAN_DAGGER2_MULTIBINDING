@@ -29,6 +29,11 @@
         <activity android:name=".ui.activities.LoginActivity"></activity>
         <activity android:name=".ui.activities.WeatherActivity" />
         <activity android:name=".ui.activities.YoutubeWeatherActivity" />
+
+        <service
+            android:name="com.vjezba.weatherapi.services.ServiceMusic"
+            android:enabled="true" />
+
     </application>
 
 </manifest>

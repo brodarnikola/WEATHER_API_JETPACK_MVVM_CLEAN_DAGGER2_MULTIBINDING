@@ -1,10 +1,7 @@
 package com.vjezba.weatherapi.ui.fragments
 
-import android.annotation.SuppressLint
 import android.content.ContentValues
-import android.content.Intent
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,11 +12,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.location.*
 import com.vjezba.domain.model.Weather
 import com.vjezba.weatherapi.R
 import com.vjezba.weatherapi.databinding.FragmentWeatherBinding
-import com.vjezba.weatherapi.ui.activities.YoutubeWeatherActivity
 import com.vjezba.weatherapi.viewmodels.WeatherViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_weather.*
@@ -106,10 +101,14 @@ class WeatherFragment : Fragment() {
         }
 
         binding.btnStartYoutubeActivity.setOnClickListener {
-
             val direction =
                 WeatherFragmentDirections.weatherFragmentToYoutubeFragment()
             findNavController().navigate(direction)
+        }
+
+        binding.btnStartServiceMusicExample.setOnClickListener {
+            val directions = WeatherFragmentDirections.weatherFragmentToServiceMusicExampleFragment()
+            findNavController().navigate(directions)
         }
     }
 
