@@ -32,7 +32,7 @@ import androidx.lifecycle.ViewModel
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.vjezba.data.di_dagger2.WeatherNetwork
-import com.vjezba.domain.model.Weather
+import com.vjezba.domain.ResultState
 import com.vjezba.domain.repository.WeatherRepository
 import com.vjezba.weatherapi.App
 import io.reactivex.ObservableSource
@@ -52,27 +52,28 @@ class WeatherViewModel @ViewModelInject constructor(
     private lateinit var locationCallback: LocationCallback
     private var fusedLocationClient: FusedLocationProviderClient? = null
 
-    private val _weatherMutableLiveData = MutableLiveData<Weather>().apply {
-        value = Weather()
-    }
+    private val _weatherMutableLiveData: MutableLiveData<ResultState<*>> = MutableLiveData()
 
-    val weatherList: LiveData<Weather> = _weatherMutableLiveData
+    val weatherList: LiveData<ResultState<*>> = _weatherMutableLiveData
 
     private fun getWeatherFromNetwork(latitude: Double, longitude: Double) {
         weatherRepository.getWeatherData(latitude, longitude)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .toObservable()
-            .subscribe(object : Observer<Weather> {
+            .subscribe(object : Observer<ResultState<*>> {
                 override fun onSubscribe(d: Disposable) {
                     compositeDisposable.add(d)
                 }
 
-                override fun onNext(response: Weather) {
+                override fun onNext(newWeatherData: ResultState<*>) {
 
-                    _weatherMutableLiveData.value?.let {
-                        _weatherMutableLiveData.value = response
-                    }
+//                    _weatherMutableLiveData.value?.let {
+//                        _weatherMutableLiveData.value = newWeatherData
+//                    }
+
+
+                    _weatherMutableLiveData.value = newWeatherData
                 }
 
                 override fun onError(e: Throwable) {
@@ -95,8 +96,9 @@ class WeatherViewModel @ViewModelInject constructor(
             .toObservable()
             .onErrorResumeNext { throwable: Throwable ->
                 return@onErrorResumeNext ObservableSource {
+
                     _weatherMutableLiveData.value?.let {
-                        _weatherMutableLiveData.value = Weather()
+                        _weatherMutableLiveData.value = ResultState.Error(throwable as java.lang.Exception)
                     }
                     Log.d("onErrorResumeNext", "on exception resume next, update ui" + throwable.localizedMessage)
                 }
@@ -107,12 +109,12 @@ class WeatherViewModel @ViewModelInject constructor(
 //                }
 //                Log.d("onExceptionResumeNext","on exception resume next, update ui")
 //            }
-            .subscribe(object : Observer<Weather> {
+            .subscribe(object : Observer<ResultState<*>> {
                 override fun onSubscribe(d: Disposable) {
                     compositeDisposable.add(d)
                 }
 
-                override fun onNext(response: Weather) {
+                override fun onNext(response: ResultState<*>) {
 
                     _weatherMutableLiveData.value?.let {
                         _weatherMutableLiveData.value = response

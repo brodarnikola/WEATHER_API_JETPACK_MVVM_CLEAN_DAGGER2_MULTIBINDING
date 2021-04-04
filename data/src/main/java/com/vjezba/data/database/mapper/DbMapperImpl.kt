@@ -3,41 +3,46 @@ package com.vjezba.data.database.mapper
 import com.vjezba.data.database.model.DBWeather
 import com.vjezba.data.networking.model.*
 import com.vjezba.data.networking.youtube.model.ApiYoutubeVideosMain
+import com.vjezba.domain.ResultState
 import com.vjezba.domain.model.*
 import com.vjezba.domain.model.youtube.*
 
 class DbMapperImpl : DbMapper {
 
-    override fun mapApiWeatherToDomainWeather(apiWeather: ApiWeather): Weather {
+    override fun mapApiWeatherToDomainWeather(apiWeather: ApiWeather): ResultState<Weather> {
         return with(apiWeather) {
-            Weather(
-                weather.map {
-                    WeatherData( it.description )
-                },
-                WeatherMain( main.temp, main.feelsLike, main.tempMax, main.tempMin, main.humidity ),
-                WeatherWind( wind.speed ),
-                name
+            ResultState.Success(
+                Weather(
+                    weather.map {
+                        WeatherData( it.description )
+                    },
+                    WeatherMain( main.temp, main.feelsLike, main.tempMax, main.tempMin, main.humidity ),
+                    WeatherWind( wind.speed ),
+                    name
+                )
             )
         }
     }
 
-    override fun mapApiForecastToDomainForecast(apiForecast: ApiForecast): Forecast {
+    override fun mapApiForecastToDomainForecast(apiForecast: ApiForecast): ResultState<Forecast> {
         return with(apiForecast) {
-            Forecast(
-                code,
-                forecastList.map {
-                    with(it) {
-                        ForecastData(
-                            ForecastMain(it.main.temp, it.main.feelsLike, it.main.tempMax),
-                            it.weather.map {
-                                ForecastDescription(it.description)
-                            },
-                            ForecastWind(it.wind.speed),
-                            dateAndTime
-                        )
-                    }
-                },
-                CityData(cityData.country, cityData.population)
+            ResultState.Success(
+                Forecast(
+                    code,
+                    forecastList.map {
+                        with(it) {
+                            ForecastData(
+                                ForecastMain(it.main.temp, it.main.feelsLike, it.main.tempMax),
+                                it.weather.map {
+                                    ForecastDescription(it.description)
+                                },
+                                ForecastWind(it.wind.speed),
+                                dateAndTime
+                            )
+                        }
+                    },
+                    CityData(cityData.country, cityData.population)
+                )
             )
         }
     }

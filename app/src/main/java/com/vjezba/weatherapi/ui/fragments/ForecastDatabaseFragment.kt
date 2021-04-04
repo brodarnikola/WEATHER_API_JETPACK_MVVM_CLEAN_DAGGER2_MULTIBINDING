@@ -12,6 +12,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.vjezba.domain.ResultState
+import com.vjezba.domain.model.Forecast
+import com.vjezba.domain.model.ForecastData
 import com.vjezba.weatherapi.databinding.FragmentForecastDatabaseBinding
 import com.vjezba.weatherapi.ui.adapters.ForecastDatabaseAdapter
 import com.vjezba.weatherapi.viewmodels.ForecastViewModel
@@ -50,13 +53,30 @@ class ForecastDatabaseFragment : Fragment() {
         initializeUi()
 
         forecastViewModel.forecastList.observe(this@ForecastDatabaseFragment, Observer { items ->
-            Log.d(ContentValues.TAG, "Data is: ${items.forecastList.joinToString { "-" }}")
-            progressBar.visibility = View.GONE
 
-            forecastDatabaseAdapter.updateDevices(items.forecastList.toMutableList())
+            when ( items ) {
+                is ResultState.Success -> {
+                    successUpdateUi(items)
+                }
+                is ResultState.Error -> {
+                    printOutExceptionInsideLog(items)
+                }
+            }
         })
 
         forecastViewModel.getWeatherFromLocalStorage()
+    }
+
+    private fun successUpdateUi(items: ResultState.Success<*>) {
+        val forecastRoomDatabaseList = items.data as Forecast
+        Log.d(ContentValues.TAG, "Data is: ${forecastRoomDatabaseList.forecastList.joinToString { "-" }}")
+        progressBar.visibility = View.GONE
+        forecastDatabaseAdapter.updateDevices(forecastRoomDatabaseList.forecastList.toMutableList())
+    }
+
+    private fun printOutExceptionInsideLog(items: ResultState.Error) {
+        val exceptionForecast = items.exception
+        Log.d(ContentValues.TAG, "Exception inside forecast fragment is: ${   exceptionForecast}")
     }
 
     private fun initializeUi() {
