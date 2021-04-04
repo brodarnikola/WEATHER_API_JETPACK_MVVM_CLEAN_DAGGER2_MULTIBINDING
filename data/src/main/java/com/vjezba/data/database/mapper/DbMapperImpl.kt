@@ -3,15 +3,15 @@ package com.vjezba.data.database.mapper
 import com.vjezba.data.database.model.DBWeather
 import com.vjezba.data.networking.model.*
 import com.vjezba.data.networking.youtube.model.ApiYoutubeVideosMain
-import com.vjezba.domain.DataState
+import com.vjezba.domain.ResultState
 import com.vjezba.domain.model.*
 import com.vjezba.domain.model.youtube.*
 
 class DbMapperImpl : DbMapper {
 
-    override fun mapApiWeatherToDomainWeather(apiWeather: ApiWeather): DataState<Weather> {
+    override fun mapApiWeatherToDomainWeather(apiWeather: ApiWeather): ResultState<Weather> {
         return with(apiWeather) {
-            DataState.Success(
+            ResultState.Success(
                 Weather(
                     weather.map {
                         WeatherData( it.description )

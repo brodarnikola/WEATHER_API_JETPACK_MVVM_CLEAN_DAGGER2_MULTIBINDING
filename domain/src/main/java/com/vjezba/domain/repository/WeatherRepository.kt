@@ -16,16 +16,16 @@
 
 package com.vjezba.domain.repository
 
-import com.vjezba.domain.DataState
+import com.vjezba.domain.ResultState
 import com.vjezba.domain.model.*
 import io.reactivex.Flowable
 
 
 interface WeatherRepository {
 
-    fun getWeatherData(latitude: Double, longitude: Double) : Flowable<DataState<Weather>>
+    fun getWeatherData(latitude: Double, longitude: Double) : Flowable<ResultState<Weather>>
 
-    fun getWeatherDataByCityName(cityName: String) : Flowable<DataState<Weather>>
+    fun getWeatherDataByCityName(cityName: String) : Flowable<ResultState<Weather>>
 
     fun getForecastData(cityName: String) : Flowable<Forecast>
 }

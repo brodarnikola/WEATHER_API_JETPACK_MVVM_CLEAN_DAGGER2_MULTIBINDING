@@ -12,7 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.vjezba.domain.DataState
+import com.vjezba.domain.ResultState
 import com.vjezba.domain.model.Weather
 import com.vjezba.weatherapi.R
 import com.vjezba.weatherapi.databinding.FragmentWeatherBinding
@@ -129,10 +129,10 @@ class WeatherFragment : Fragment() {
         weatherViewModel.weatherList.observe(viewLifecycleOwner, Observer { item ->
 
             when ( item ) {
-                is DataState.Success -> {
+                is ResultState.Success -> {
                     successSetupUiWithWeatherData(item.data as Weather)
                 }
-                is DataState.Error -> {
+                is ResultState.Error -> {
                     Log.d(ContentValues.TAG, "Exception is: ${ item.exception}")
 
                     notFoundAnyCityWithInsertedText()
