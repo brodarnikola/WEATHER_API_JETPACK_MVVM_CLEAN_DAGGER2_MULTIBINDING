@@ -24,23 +24,25 @@ class DbMapperImpl : DbMapper {
         }
     }
 
-    override fun mapApiForecastToDomainForecast(apiForecast: ApiForecast): Forecast {
+    override fun mapApiForecastToDomainForecast(apiForecast: ApiForecast): ResultState<Forecast> {
         return with(apiForecast) {
-            Forecast(
-                code,
-                forecastList.map {
-                    with(it) {
-                        ForecastData(
-                            ForecastMain(it.main.temp, it.main.feelsLike, it.main.tempMax),
-                            it.weather.map {
-                                ForecastDescription(it.description)
-                            },
-                            ForecastWind(it.wind.speed),
-                            dateAndTime
-                        )
-                    }
-                },
-                CityData(cityData.country, cityData.population)
+            ResultState.Success(
+                Forecast(
+                    code,
+                    forecastList.map {
+                        with(it) {
+                            ForecastData(
+                                ForecastMain(it.main.temp, it.main.feelsLike, it.main.tempMax),
+                                it.weather.map {
+                                    ForecastDescription(it.description)
+                                },
+                                ForecastWind(it.wind.speed),
+                                dateAndTime
+                            )
+                        }
+                    },
+                    CityData(cityData.country, cityData.population)
+                )
             )
         }
     }

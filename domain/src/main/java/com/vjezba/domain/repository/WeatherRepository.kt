@@ -27,5 +27,5 @@ interface WeatherRepository {
 
     fun getWeatherDataByCityName(cityName: String) : Flowable<ResultState<Weather>>
 
-    fun getForecastData(cityName: String) : Flowable<Forecast>
+    fun getForecastData(cityName: String) : Flowable<ResultState<Forecast>>
 }

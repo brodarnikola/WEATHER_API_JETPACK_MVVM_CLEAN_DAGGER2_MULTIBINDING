@@ -25,9 +25,11 @@ import androidx.lifecycle.ViewModel
 import com.vjezba.data.database.WeatherDatabase
 import com.vjezba.data.database.mapper.DbMapper
 import com.vjezba.data.di_dagger2.WeatherNetwork
+import com.vjezba.domain.ResultState
 import com.vjezba.domain.model.CityData
 import com.vjezba.domain.model.Forecast
 import com.vjezba.domain.model.ForecastData
+import com.vjezba.domain.model.Weather
 import com.vjezba.domain.repository.WeatherRepository
 import io.reactivex.Observable
 import io.reactivex.Observer
@@ -45,29 +47,31 @@ class ForecastViewModel @ViewModelInject constructor(
 
     private val compositeDisposable = CompositeDisposable()
 
-    private val _forecastMutableLiveData = MutableLiveData<Forecast>().apply {
-        value = Forecast("", listOf(), CityData("", 0L))
-    }
+//    private val _forecastMutableLiveData = MutableLiveData<Forecast>().apply {
+//        value = Forecast("", listOf(), CityData("", 0L))
+//    }
+//
+//    val forecastList: LiveData<Forecast> = _forecastMutableLiveData
 
-    val forecastList: LiveData<Forecast> = _forecastMutableLiveData
+    private val _forecastMutableLiveData: MutableLiveData<ResultState<*>> = MutableLiveData()
+
+    val forecastList:  LiveData<ResultState<*>> = _forecastMutableLiveData
 
     fun getForecastFromNetwork(cityName: String) {
         weatherRepository.getForecastData(cityName)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .toObservable()
-            .subscribe(object : Observer<Forecast> {
+            .subscribe(object : Observer<ResultState<*>> {
                 override fun onSubscribe(d: Disposable) {
                     compositeDisposable.add(d)
                 }
 
-                override fun onNext(response: Forecast) {
+                override fun onNext(responseForecast: ResultState<*>) {
 
-                    insertWeatherIntoDatabase(response)
+                    insertWeatherIntoDatabase(responseForecast)
 
-                    _forecastMutableLiveData.value?.let {
-                        _forecastMutableLiveData.value = response
-                    }
+                    _forecastMutableLiveData.value = responseForecast
                 }
 
                 override fun onError(e: Throwable) {
@@ -83,42 +87,52 @@ class ForecastViewModel @ViewModelInject constructor(
             })
     }
 
-    private fun insertWeatherIntoDatabase(forecast: Forecast) {
+    private fun insertWeatherIntoDatabase(response: ResultState<*>) {
+        when ( response ) {
+            is ResultState.Success -> {
+                Observable.fromCallable {
 
-        Observable.fromCallable {
+                    val responseForecast = response.data as Forecast
 
-            val weather = dbMapper?.mapDomainWeatherToDbWeather(forecast) ?: listOf()
-            dbWeather.weatherDAO().updateWeather(
-                weather
-            )
-            Log.d(
-                "da li ce uci unutra * ",
-                "da li ce uci unutra, spremiti podatke u bazu podataka: " + toString()
-            )
-        }
-            .doOnError { Log.e("Error in observables", "Error is: ${it.message}, ${throw it}") }
-            .subscribeOn(Schedulers.io())
-            .subscribe {
-                Log.d(
-                    "Hoce spremiti vijesti",
-                    "Inserted ${forecast.forecastList.size} forecast data from API into DB..."
-                )
+                    val weather = dbMapper?.mapDomainWeatherToDbWeather(responseForecast) ?: listOf()
+                    dbWeather.weatherDAO().updateWeather(
+                        weather
+                    )
+                    Log.d(
+                        "da li ce uci unutra * ",
+                        "da li ce uci unutra, spremiti podatke u bazu podataka: " + toString()
+                    )
+                }
+                    .doOnError { Log.e("Error in observables", "Error is: ${it.message}, ${throw it}") }
+                    .subscribeOn(Schedulers.io())
+                    .subscribe {
+
+                        val responseForecast = response.data as Forecast
+                        Log.d(
+                            "Hoce spremiti vijesti",
+                            "Inserted ${responseForecast.forecastList.size} forecast data from API into DB..."
+                        )
+                    }
             }
+            is ResultState.Error -> {
+                val exceptionForecast = response.exception
+                Log.d(ContentValues.TAG, "Exception inside forecastViewModel is: ${   exceptionForecast}")
+            }
+        }
+
     }
 
     fun getWeatherFromLocalStorage() {
         Observable.fromCallable {
             val listForecast = getForecastFromDB()
-            Forecast("", listForecast, CityData())
+            val responseForecast = Forecast("", listForecast, CityData())
+            ResultState.Success(responseForecast)
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnNext { data: Forecast? ->
-
-                Log.i("Size of database", "")
-                _forecastMutableLiveData.value?.let { _ ->
-                    _forecastMutableLiveData.value = data
-                }
+            .doOnNext { forecastData: ResultState.Success<Forecast> ->
+                Log.i("Size of database", "Size when reading database is: ${forecastData}")
+                _forecastMutableLiveData.value = forecastData
             }
             .subscribe()
     }

@@ -43,7 +43,7 @@ class WeatherRepositoryImpl constructor(
         return correctResult
     }
 
-    override fun getForecastData(cityName: String): Flowable<Forecast> {
+    override fun getForecastData(cityName: String): Flowable<ResultState<Forecast>> {
         val result = service.getForecast(cityName, API_KEY_FOR_OPEN_WEATHER)
 
         val correctResult = result.map { dbMapper?.mapApiForecastToDomainForecast(it)!! }
