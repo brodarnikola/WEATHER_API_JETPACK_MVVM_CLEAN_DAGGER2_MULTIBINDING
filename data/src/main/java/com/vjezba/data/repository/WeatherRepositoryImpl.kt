@@ -6,6 +6,7 @@ import com.vjezba.data.API_KEY_FOR_OPEN_WEATHER
 import com.vjezba.data.database.WeatherDatabase
 import com.vjezba.data.database.mapper.DbMapper
 import com.vjezba.data.networking.WeatherRepositoryApi
+import com.vjezba.domain.DataState
 import com.vjezba.domain.model.*
 import com.vjezba.domain.repository.WeatherRepository
 import io.reactivex.Flowable
@@ -21,7 +22,7 @@ class WeatherRepositoryImpl constructor(
     private val dbMapper: DbMapper?
 ) : WeatherRepository {
 
-    override fun getWeatherData(latitude: Double, longitude: Double): Flowable<Weather> {
+    override fun getWeatherData(latitude: Double, longitude: Double): Flowable<DataState<Weather>> {
 
         val result = service.getWeather(latitude, longitude, API_KEY_FOR_OPEN_WEATHER)
 
@@ -32,7 +33,7 @@ class WeatherRepositoryImpl constructor(
         return correctResult
     }
 
-    override fun getWeatherDataByCityName(cityName: String): Flowable<Weather> {
+    override fun getWeatherDataByCityName(cityName: String): Flowable<DataState<Weather>> {
 
         val cityNameUrlEncoded = URLEncoder.encode(cityName, "utf-8")
 

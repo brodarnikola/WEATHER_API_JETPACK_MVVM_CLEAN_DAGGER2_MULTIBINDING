@@ -3,20 +3,23 @@ package com.vjezba.data.database.mapper
 import com.vjezba.data.database.model.DBWeather
 import com.vjezba.data.networking.model.*
 import com.vjezba.data.networking.youtube.model.ApiYoutubeVideosMain
+import com.vjezba.domain.DataState
 import com.vjezba.domain.model.*
 import com.vjezba.domain.model.youtube.*
 
 class DbMapperImpl : DbMapper {
 
-    override fun mapApiWeatherToDomainWeather(apiWeather: ApiWeather): Weather {
+    override fun mapApiWeatherToDomainWeather(apiWeather: ApiWeather): DataState<Weather> {
         return with(apiWeather) {
-            Weather(
-                weather.map {
-                    WeatherData( it.description )
-                },
-                WeatherMain( main.temp, main.feelsLike, main.tempMax, main.tempMin, main.humidity ),
-                WeatherWind( wind.speed ),
-                name
+            DataState.Success(
+                Weather(
+                    weather.map {
+                        WeatherData( it.description )
+                    },
+                    WeatherMain( main.temp, main.feelsLike, main.tempMax, main.tempMin, main.humidity ),
+                    WeatherWind( wind.speed ),
+                    name
+                )
             )
         }
     }

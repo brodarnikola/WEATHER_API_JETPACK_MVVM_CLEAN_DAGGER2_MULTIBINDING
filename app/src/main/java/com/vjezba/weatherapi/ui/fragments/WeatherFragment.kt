@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.vjezba.domain.DataState
 import com.vjezba.domain.model.Weather
 import com.vjezba.weatherapi.R
 import com.vjezba.weatherapi.databinding.FragmentWeatherBinding
@@ -127,23 +128,40 @@ class WeatherFragment : Fragment() {
 
         weatherViewModel.weatherList.observe(viewLifecycleOwner, Observer { item ->
 
-            Log.d(ContentValues.TAG, "Weather data: ${item.weather.joinToString { "-" }}")
-            rlSearchDataByCurrentLocation.visibility = View.GONE
-            clDisplayDataByCurrentLocation.visibility = View.VISIBLE
+            when ( item ) {
+                is DataState.Success -> {
+                    successSetupUiWithWeatherData(item.data as Weather)
+                }
+                is DataState.Error -> {
+                    Log.d(ContentValues.TAG, "Exception is: ${ item.exception}")
 
-            if( searchNewCityData ) {
-                binding.btnSearchWeatherByCityName.isEnabled = true
-                binding.btnSearchWeatherByCityName.alpha = 1.0f
-            }
-
-            if( item.main.temp == "" && item.name == "" ) {
-                notFoundAnyCityWithInsertedText()
-            }
-            else {
-                setCurrentCityLocation(item)
+                    notFoundAnyCityWithInsertedText()
+                    binding.btnSearchWeatherByCityName.isEnabled = true
+                    binding.btnSearchWeatherByCityName.alpha = 1.0f
+                }
             }
         })
     }
+
+
+    private fun successSetupUiWithWeatherData(item: Weather) {
+        Log.d(ContentValues.TAG, "Weather data: ${item.weather.joinToString { "-" }}")
+        rlSearchDataByCurrentLocation.visibility = View.GONE
+        clDisplayDataByCurrentLocation.visibility = View.VISIBLE
+
+        if( searchNewCityData ) {
+            binding.btnSearchWeatherByCityName.isEnabled = true
+            binding.btnSearchWeatherByCityName.alpha = 1.0f
+        }
+
+        if( item.main.temp == "" && item.name == "" ) {
+            notFoundAnyCityWithInsertedText()
+        }
+        else {
+            setCurrentCityLocation(item)
+        }
+    }
+
 
     private fun setCurrentCityLocation(item: Weather) {
         tvCurrentAddress.setTextColor(
