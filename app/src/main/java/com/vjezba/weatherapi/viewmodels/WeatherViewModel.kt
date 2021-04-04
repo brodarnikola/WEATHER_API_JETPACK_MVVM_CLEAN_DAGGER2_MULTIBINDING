@@ -67,12 +67,6 @@ class WeatherViewModel @ViewModelInject constructor(
                 }
 
                 override fun onNext(newWeatherData: ResultState<*>) {
-
-//                    _weatherMutableLiveData.value?.let {
-//                        _weatherMutableLiveData.value = newWeatherData
-//                    }
-
-
                     _weatherMutableLiveData.value = newWeatherData
                 }
 
