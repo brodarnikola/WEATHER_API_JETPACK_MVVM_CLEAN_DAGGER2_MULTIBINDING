@@ -34,9 +34,6 @@
             android:name="com.vjezba.weatherapi.services.ServiceMusic"
             android:enabled="true" />
 
-        <receiver android:name=".ui.utilities.CustomInternetReceiver" >
-        </receiver>
-
     </application>
 
 </manifest>
