@@ -1,6 +1,7 @@
 package com.vjezba.weatherapi.ui.activities
 
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
@@ -10,8 +11,10 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.lifecycle.Observer
 import com.vjezba.weatherapi.R
+import com.vjezba.weatherapi.ui.utilities.CustomInternetReceiver
 import com.vjezba.weatherapi.viewmodels.FingerprintViewModel
 import kotlinx.android.synthetic.main.activity_login.*
+
 
 class LoginActivity : BaseActivity() {
 
@@ -23,6 +26,8 @@ class LoginActivity : BaseActivity() {
     var fingerPrintTitle = ""
     var fingerPrintDescription = ""
     var fingerPrintCancel = ""
+
+    private lateinit var receiver: CustomInternetReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,13 +49,36 @@ class LoginActivity : BaseActivity() {
         setOnClickListeners()
         addLiveData()
 
+        receiver = CustomInternetReceiver()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        IntentFilter("com.vjezba.weatherapi.SOME_ACTION").also {
+            registerReceiver(receiver, it)
+        }
+        IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED).also {
+            registerReceiver(receiver, it)
+        }
+        IntentFilter(Intent.ACTION_BATTERY_CHANGED).also {
+            registerReceiver(receiver, it)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(receiver)
     }
 
     private fun setOnClickListeners() {
         biometricPrompt = viewModel.createBiometricPrompt()
 
         btnFingerPrint.setOnClickListener {
-            val promptInfo = viewModel.createPromptInfo(fingerPrintTitle, fingerPrintDescription, fingerPrintCancel)
+            val promptInfo = viewModel.createPromptInfo(
+                fingerPrintTitle,
+                fingerPrintDescription,
+                fingerPrintCancel
+            )
             if (viewModel.getBiometricManager().canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS) {
                 biometricPrompt.authenticate(promptInfo)
             } else {
@@ -63,6 +91,11 @@ class LoginActivity : BaseActivity() {
             startActivity(intent)
             finish()
         }
+
+        btnBroadCastReceiver.setOnClickListener {
+            val intent = Intent("com.vjezba.weatherapi.SOME_ACTION")
+            sendBroadcast(intent)
+        }
     }
 
     private fun setCorrectTextForFingerPrintDialog() {
@@ -74,7 +107,10 @@ class LoginActivity : BaseActivity() {
     private fun checkIfThereIsAtLeastOneFingerprintAddedToMobilePhone() {
         val notOneFingerExistOnMobilePhone = viewModel.checkIfFingerprinteIsEnabled()
         if( notOneFingerExistOnMobilePhone == android.hardware.biometrics.BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED) {
-            Log.i("FingerprintAvailable", "Da li ce uci za fingerprint Check if fingerprint is availabe: ${notOneFingerExistOnMobilePhone}")
+            Log.i(
+                "FingerprintAvailable",
+                "Da li ce uci za fingerprint Check if fingerprint is availabe: ${notOneFingerExistOnMobilePhone}"
+            )
             // Prompts the user to create credentials that your app accepts.
             val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
                 putExtra(
@@ -84,7 +120,10 @@ class LoginActivity : BaseActivity() {
             }
             startActivityForResult(enrollIntent, BIOMETRICS_REQUEST_CODE)
         }
-        Log.i("FingerprintAvailable", "Check if there is at least one fingerprint: ${notOneFingerExistOnMobilePhone}")
+        Log.i(
+            "FingerprintAvailable",
+            "Check if there is at least one fingerprint: ${notOneFingerExistOnMobilePhone}"
+        )
     }
 
     private fun addLiveData() {
